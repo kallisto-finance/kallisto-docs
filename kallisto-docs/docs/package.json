@@ -1,0 +1,19 @@
+{
+  "name": "kallisto-docs",
+  "version": "0.0.1",
+  "description": "Kallisto Finance Documentation",
+  "main": "index.js",
+  "authors": {
+    "name": "Kallisto",
+    "email": "info@kallisto.finance"
+  },
+  "repository": "https://github.com/kallisto-finance/kallisto-docs/kallisto-docs",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.5.3"
+  }
+}
