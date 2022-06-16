@@ -4,7 +4,7 @@ module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
-  title: 'Vuepress Docs Boilerplate',
+  title: 'Kallisto Documents',
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
@@ -42,8 +42,8 @@ module.exports = {
         link: '/config/'
       },
       {
-        text: 'VuePress',
-        link: 'https://v1.vuepress.vuejs.org'
+        text: 'Kallisto',
+        link: 'https://kallisto.finance'
       }
     ],
     sidebar: {
@@ -53,6 +53,7 @@ module.exports = {
           collapsable: false,
           children: [
             '',
+            'strategy-overview',
             'using-vue',
           ]
         }
