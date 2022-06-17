@@ -1,15 +1,15 @@
 ---
 home: true
-heroImage: https://v1.vuepress.vuejs.org/hero.png
-tagline: Kallisto Finance Documentation
+heroImage: https://pbs.twimg.com/profile_images/1516477796029284353/KmZ8uxmk_400x400.jpg
+tagline: The official documentation for Kallisto
 actionText: Quick Start →
 actionLink: /guide/
 features:
-- title: Feature 1 Title
-  details: Feature 1 Description
-- title: Feature 2 Title
-  details: Feature 2 Description
-- title: Feature 3 Title
-  details: Feature 3 Description
-footer: Made by Kallisto with ❤️
+- title: Yield Maximizer
+  details: Automate your role as a liquidity provider to generate the best yield.
+- title: Dynamic APY Chaser
+  details: Utilize Kallisto to make the most out of Curve vaults.
+- title: DeFi Volume Reimagined
+  details: Take DeFi to the next level by building with Kallisto.
+footer: © 2022 Volume Finance
 ---
