@@ -38,10 +38,6 @@ module.exports = {
         link: '/guide/',
       },
       {
-        text: 'Config',
-        link: '/config/'
-      },
-      {
         text: 'Kallisto',
         link: 'https://kallisto.finance'
       }
@@ -49,12 +45,19 @@ module.exports = {
     sidebar: {
       '/guide/': [
         {
-          title: 'Guide',
+          title: 'Introduction',
           collapsable: false,
           children: [
-            '',
             'strategy-overview',
-            'using-vue',
+          ]
+        },
+        {
+          title: 'Architecture',
+          collapsable: false,
+          children: [
+            'overview',
+            'scheduler',
+            'pools',
           ]
         }
       ],
