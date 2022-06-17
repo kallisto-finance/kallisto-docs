@@ -48,6 +48,7 @@ module.exports = {
           title: 'Introduction',
           collapsable: false,
           children: [
+            `Abstract`,
             'strategy-overview',
           ]
         },
@@ -58,6 +59,9 @@ module.exports = {
             'overview',
             'scheduler',
             'pools',
+            'deposits-withdrawals',
+            ['swapping', 'Swapping'],
+            'fees',
           ]
         }
       ],
