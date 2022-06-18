@@ -35,7 +35,7 @@ module.exports = {
     nav: [
       {
         text: 'Guide',
-        link: '/guide/',
+        link: '/guide/abstract',
       },
       {
         text: 'Kallisto',
@@ -45,11 +45,11 @@ module.exports = {
     sidebar: {
       '/guide/': [
         {
-          title: 'Introduction',
+          title: 'Kallisto',
           collapsable: false,
           children: [
-            `Abstract`,
-            'strategy-overview',
+            `abstract`,
+            `introduction`,
           ]
         },
         {
