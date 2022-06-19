@@ -4,7 +4,7 @@ module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
-  title: 'Kallisto Documents',
+  title: 'Kallisto Finance',
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
@@ -49,17 +49,16 @@ module.exports = {
           collapsable: false,
           children: [
             `abstract`,
-            `introduction`,
+            [`introduction`, `Introduction`],
           ]
         },
         {
-          title: 'Architecture',
+          title: 'Design',
           collapsable: false,
           children: [
-            'overview',
+            'transfers',
             'scheduler',
             'pools',
-            'deposits-withdrawals',
             ['swapping', 'Swapping'],
             'fees',
           ]

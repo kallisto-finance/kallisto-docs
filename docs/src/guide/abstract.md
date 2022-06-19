@@ -2,7 +2,7 @@
 
 AMMs (Automated Market Makers) facilitate the permissionless trade of assets 
 through various liquidity pools. AMMs are undoubtedly a core pillar of DeFi
-(decentralized finance). In 2021, Curve Finance, had around 69.7 billion dollars 
+(decentralized finance). In 2021, Curve Finance alone had around 69.7 billion dollars 
 of volume across their DEX (decentralized exchange). To create and maintain liqudity, 
 LPs (liquidity providers) contribute to the volume of assets in a liquidity pool and 
 are often incentived based on the amount of volume they control. However, an LP is 
