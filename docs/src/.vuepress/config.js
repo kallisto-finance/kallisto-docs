@@ -57,9 +57,8 @@ module.exports = {
           collapsable: false,
           children: [
             'transfers',
-            'scheduler',
             'pools',
-            ['swapping', 'Swapping'],
+            'scheduler',
             'fees',
           ]
         }
@@ -73,5 +72,6 @@ module.exports = {
   plugins: [
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
+    '@renovamen/vuepress-plugin-katex',
   ]
 }

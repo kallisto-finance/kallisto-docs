@@ -1,4 +1,5 @@
-# Kallisto: A Decentralized and Automated Yield Chaser
+# Kallisto
+### A Decentralized and Automated Yield Chaser
 
 Kallisto v1 was previously built on Terra, which is no longer functioning. Kallisto is heading 
 to Ethereum to target the largest AMMs with a current focus in offering a Curve Finance APY chaser 

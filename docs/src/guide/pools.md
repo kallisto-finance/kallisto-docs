@@ -26,7 +26,7 @@ pool update exceeds the rebalance lock up.
 Rebalance lock up is the time the vault waits from one pool update to the next one. It is 
 determined by the vault volume. When the vault volume is small, the rebalance lock up time is 
 large to reduce the cost of frequent trading. Once the volume is large enough, the lock up time 
-becomes shorter to take advantage of the most up-to-date market info. Currently this parameter is 
+becomes shorter to take advantage of the most up-to-date market info. Currently, this parameter is 
 in three different tiers:
 
 - `lock_up = 3 months`, when vault cap is below $100K
