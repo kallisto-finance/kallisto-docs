@@ -26,13 +26,13 @@
 Welcome to the official Kallisto Finance documentation.
 
 Kallisto v1 was previously built on Terra, which is no longer functioning. Kallisto is heading 
-to Ethereum to target the largest AMMs with a current focus in offering a Curve Finance APY chaser 
+to Ethereum to target the largest AMMs with a current focus in offering a Curve Finance (http://curve.finance/) APY chaser 
 vault. This new vault will aim to provide a low-cost, data science-based strategy for liquidity 
-providers to participate in Curve pools. By aggregating users’ deposits and monitoring price dynamics, 
+providers to participate in liquidity pools on Curve. By aggregating users’ deposits, 
 the vault can significantly reduce the cost for staying in the highest APY pools on Curve.
 
 Kallisto’s Curve APY chaser vault acts as a DeFi asset management tool that automatically provides 
-and deploys dynamic liquidity provider strategies for Curve pools. Kallisto monitors the overall pool 
+and deploys dynamic liquidity provider strategies for Curve liquidity pools. Kallisto monitors the overall pool 
 statistics on Curve's DEX and searches for the best liquidity provider opportunities.
 
 To avoid illiquidity risk and small cap coins’ high volatility, the vault only chases APY among a 
@@ -41,12 +41,19 @@ and selects the pool with the highest APY with both base and CRV returns aggrega
 moving liquidity into the optimal pool, the vault is designed to achieve the best return across all 
 Curve pools while keeping liquidity risk low.
 
-To chases the APY on Curve, Kallisto uses a scheduler called Paloma. Paloma is a job scheduler built
+To chase the APY on Curve, Kallisto uses a scheduler called Paloma. Paloma is a job scheduler built
 using the Cosmos SDK, that can scheduling transactions that control contracts on any other chain.
 This allows Paloma to become responsble for systematic trade and liquidity execution on any decentralized 
 exchange. To start, scheduling for Kallisto will be ran off-chain; similar to the liquidation vaults in 
 Kallisto  v1, a cron job will execute smart contract functions and run a stragety script written in Python. 
 Eventually, the strategy and scheduling will be ran on Paloma.
+
+For now the off-chain scheduler runs multiple times daily and executes the strategy scripts for data feed and monitoring. 
+At each update, the scripts query from the vault's smart contracts to check the balance and the status of the current pool.
+To see if it is worth going into a new pool, the scripts analyze the size of the vault and the time it has spent in the current pool.
+If conditions for pool update are met, the strategy scripts query Curve Finance's API endpoints to receive real time pool statistics and dettermine
+which pool is the best one to join. Then it triggers an event and executes smart contract functions to move the vault's liquidity to the new pool.
+The gas fee and transaction cost is shared by all the users.
 
 ## Contributing to Documentation
 
