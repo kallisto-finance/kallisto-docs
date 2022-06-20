@@ -50,13 +50,13 @@ module.exports = {
           children: [
             `abstract`,
             [`introduction`, `Introduction`],
+            `how-to-use`,
           ]
         },
         {
           title: 'Design',
           collapsable: false,
           children: [
-            'transfers',
             'pools',
             'scheduler',
             'fees',

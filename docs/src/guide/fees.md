@@ -49,7 +49,8 @@ $$0.02 \div 365 = 0.000055 $$
 
 On the [yearn.finance](https://yearn.finance/) user interface, yield is displayed as net APY. This means that both 
 fees and compounding returns are taken into consideration in the rates presented. Since harvests don't occur on a set basis, 
-yield is estimated based off of historical data. For more information, see [How to Understand yVault ROI](https://docs.yearn.finance/getting-started/guides/how-to-understand-yvault-roi).
+yield is estimated based off of historical data. For more information, see 
+[How to Understand yVault ROI](https://docs.yearn.finance/getting-started/guides/how-to-understand-yvault-roi).
 
 :::details Here are two proposals
 

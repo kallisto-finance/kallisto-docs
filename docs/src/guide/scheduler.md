@@ -98,15 +98,6 @@ STETH_INFO[1], 0, 2, STETH_INFO[2], False)
 4. `SwapRoute` **WETH -> ETH**: **[WETH, VETH, 0, 0, False, False, 0]**
 5. Deposit **ETH to stETH**; new pool information.
 
-
-Example for switching from the **MIM+3** pool to the **stETH** pool:
-
-```shell
-Vault.update_pool(USDT, 3, [[TRICRYPTO2_INFO[0], WETH, 0, 2, False, True, 
-min_eth_amount_from_swap][WETH, VETH, 0, 0, False, False, 0]], STETH_INFO[0], 
-STETH_INFO[1], 0, 2, STETH_INFO[2], False)
-```
-
 ### Make fee
 
 Schedule a job that calculates the [performance fee](fees.md#fee-types) and calls the `make_fee` function of 
