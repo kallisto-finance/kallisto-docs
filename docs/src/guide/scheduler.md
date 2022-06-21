@@ -12,10 +12,9 @@ of information for the vault:
 
 ## Process
 
-1. Cron job on Kallisto server
-2. Script that checks the `timestamp` of the transaction of entering the pool
-3. Script calls the DeFi script to determine the next pool 
-4. Script that executes the `update_pool` function
+1. Strategy acquires data from Curve Pool performance
+2. Strategy then identifies next best performing pool by APY
+3. Kallisto update_pool function is called by any user to swap into the new pool
 
 ### Swapping Optimization
 
@@ -103,10 +102,7 @@ STETH_INFO[1], 0, 2, STETH_INFO[2], False)
 Schedule a job that calculates the [performance fee](fees.md#fee-types) and calls the `make_fee` function of 
 the Curve APY Chaser smart contract.
 
-- JS script using ethers.js and cron-job on the dedicated Kallisto server, using the same wallet as `update_pool`.
-- Cron job runs daily
-- JS script should connect to [quicknode endpoint](https://www.quicknode.com/endpoints/44685).
-- Script runsf the `monitor.py` script with the following inputs:
+- Kallisto strategy collects information from the contract:
     - current tvl (total cap)
     - current timestamp
     - timestamp of previous run (when tvl was passed to script)
