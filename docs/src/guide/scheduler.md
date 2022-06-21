@@ -30,15 +30,12 @@ Kallisto uses the [CurveFi SwapRoute](https://github.com/curvefi/curve-js#router
 
 ### Check for Pool Update
 
-- JS script using Ethers.js and a cron job on the dedicated Kallisto server
-- Cron job runs once a day
-- JS script should connect to [quicknode endpoint](https://www.quicknode.com/endpoints/44685).
-- JS script checks the time between now and when the current Curve pool was entered (`lock_period`) AND checks the current vault total cap.
+- Kallisto strategy checks the time between now and when the current Curve pool was entered (`lock_period`) AND checks the current vault total cap.
     - Total cap calculation is the balance from Curve LP from vault `main_lp_token` multiplied by 
       [Curve LP price information](https://thegraph.com/explorer/subgraph?id=4yx4rR6Kf8WH4RJPGhLSHojUxJzRWgEZb51iTran1sEG&view=Overview):
       $$ main_lp_token \times LP price$$
 
-Run the [DeFi python script](https://github.com/VolumeFi/volume_defi_strategy/tree/b4b7d3ea2d709ca271035d9d8f69e012845be6b8) IFF
+Run the strategy If and only If:
 
   - **total cap below $100k and `lock_period` ≥ 3 months** OR
   - **total cap ≥ $100k and < $1MN  and `lock_period` ≥ 1 month** OR
