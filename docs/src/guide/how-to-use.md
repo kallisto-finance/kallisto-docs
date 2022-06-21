@@ -4,36 +4,25 @@
 
 Navigate to [kallisto.finance](https://kallisto.finance/).
 
-![kallisto finance](./assets/dashboard/kallisto-finance.png)
 
 Connect your wallet.
-
-<img align="center" src="./assets/dashboard/connect-wallet-1.png" width="800" height="500">
 
 We are using MetaMask in this tutorial. Ensure that you have access
 to your wallet on the browser you are using.
 
-<img align="center" src="./assets/dashboard/connect-wallet-2.png" width="800" height="500">
-
 Select the account you would like to connect.
-
-<img align="center" src="./assets/dashboard/connect-wallet-3.png" width="800" height="250">
 
 Ensure that you are connecting to official Kallisto finance dApp when
 connecting your wallet.
-
-<img align="center" src="./assets/dashboard/connect-wallet-4.png" width="800" height="250">
 
 You will see the vault dashboard that shows the active pool, 
 the amount of liqudity your account is providing and how much of
 the pool liqudity is yours.
 
-<img align="center" src="./assets/dashboard/account-dashboard.png" width="800" height="500">
 
 On the dashboard, a user is able to manage their liqudity by either
 adding or withdrawing assets.
 
-<img align="center" src="./assets/dashboard/manage-liquidity.png" width="800" height="400">
 
 ## Deposits
 
