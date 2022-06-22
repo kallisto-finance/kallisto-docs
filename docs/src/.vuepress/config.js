@@ -61,7 +61,14 @@ module.exports = {
             'scheduler',
             'fees',
           ]
-        }
+        },
+        {
+          title: 'Smart Contracts',
+          collapsable: false,
+          children: [
+            'chaser-vault',
+          ]
+        },
       ],
     }
   },
