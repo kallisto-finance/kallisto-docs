@@ -228,7 +228,7 @@ def safe_transfer_from(_token: address, _from: address, _to: address, _value: ui
 
 ## Deposit
 
-The internal deposit function interacts Curve's smart contracts and adds liquidity into a Curve liquidity pool.  
+The internal deposit function interacts Curve's smart contracts and adds liquidity in one token into a Curve liquidity pool.
 ```Javascript
 @internal
 def _deposit(main_pool_: address, _main_deposit: address, _main_pool_coin_count: uint8, i: int128, in_token: address, in_amount: uint256):
@@ -671,7 +671,7 @@ def __default__():
 ```
 
 ## emergency functions
-The emergency functions provides security for the vault. 
+The emergency functions provide security for the vault and can only be executed by the admin.
 
 set_main_pool: used by the admin to set the main pool
 
