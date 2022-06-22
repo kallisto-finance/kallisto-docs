@@ -52,6 +52,7 @@ event Updated:
     to_amount: uint256
 ```
 
+## ERC20 standard interfaces
 Global variables
 ```Javascript
 # ERC20 standard interfaces
@@ -123,7 +124,7 @@ interface WrappedEth:
 
 ## Vault initiation
 
-The initiation function is to set up the vault by specifying the name, symbol, admin, validators, main pool and main deposit
+The initiation function is called to set up the vault by specifying the name, symbol, admin, validators, main pool and main deposit. 
 ```Javascript
 @external
 def __init__(_name: String[64], _symbol: String[32], _main_pool: address, _main_deposit: address, _main_pool_coin_count: uint8, _main_lp_token: address, _is_crypto_pool: bool):
@@ -155,6 +156,17 @@ def __init__(_name: String[64], _symbol: String[32], _main_pool: address, _main_
 ## ERC20 common functions
 
 Define internal functions for mint, burn, safe transfer and safe transfer from alternative addresses.
+
+mint: mint a token specified by its address at a specific amount
+
+burn: burn a token specified by its address at a specific amount
+
+safe_approve: approve the use of a token by a smart contract 
+
+safe_transfer: transfer token from the vault to another address
+
+safe_transfer_from: transfer token from one address to another address
+
 ```Javascript
 @internal
 def _mint(_to: address, _value: uint256):
@@ -438,7 +450,7 @@ def deposit(token_address: address, amount: uint256, i: int128, swap_route: DynA
 ```
 
 ## Withdraw
-
+The internal withdraw function interacts with the Curve smart contracts directly. It approves the transaction and removes liquidity in one token. The function requires inputs specifying the LP tokens and the main pool address to remove liquidity, and returned token address, index and the amount.
 ```Javascript
 @internal
 def _withdraw(lp_token: address, _main_pool: address, out_token: address, i: int128, out_amount: uint256) -> uint256:
@@ -492,7 +504,7 @@ def _withdraw(lp_token: address, _main_pool: address, out_token: address, i: int
     # returns withdrawn token amount
     return ERC20(out_token).balanceOf(self) - old_balance
 ```
-The external withdraw function is a wrapper of the internal withdraw function. It is called when users withdraw liquidity from the vault. The inputs include withdrawal token address and amount, swap route and the minimal amount for swapping.
+The external withdraw function is a wrapper of the internal withdraw function. It is called when users withdraw liquidity from the vault. The inputs include withdrawal token address and amount, swap route and the minimal amount for swapping. Since the users' withdrawal token may differ from the pool's tokens, a swap will be applied in that case. 
 ```Javascript
 @external
 @nonreentrant("lock")
@@ -530,6 +542,7 @@ def withdraw(token_address: address, amount: uint256, i: int128, swap_route: Dyn
 
 ## Update pool
 
+The update pool function moves the vault's liquidity from one pool to another one. It first removes liquidity from the old pool and receives one token. Then it swaps this token for the new token, and adds liquidity to the new pool. This is followed by updating the new LP amount. 
 ```Javascript
 @external
 @nonreentrant('lock')
@@ -574,6 +587,19 @@ def update_pool(_out_token: address, old_i: int128, swap_route: DynArray[SwapRou
 ```
 
 ## Other external functions
+These functions are used for accounting related purposes. 
+
+transfer: sends token from the vault to another address
+
+transferFrom: sends token from one address to another address
+
+approve: 
+
+make fee: charge fees in the form of transfering tokens into the admin account
+
+transfer_admin: transfer admin address to another one
+
+set_validator: register new validator or remove validator
 
 ```Javascript
 @external
@@ -642,8 +668,16 @@ def set_validator(_validator: address, _value: bool):
 def __default__():
 # to make possible to receive ETH
     pass
+```
 
-# emergency functions
+## emergency functions
+The emergency functions provides security for the vault. 
+
+set_main_pool: used by the admin to set the main pool
+
+pause:  used by the admin to pause all functionality 
+
+```Javascript
 @external
 def set_main_pool(_new_pool: address):
     assert msg.sender == self.admin
