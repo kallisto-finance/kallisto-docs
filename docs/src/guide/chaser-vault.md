@@ -2,8 +2,7 @@
 
 The `curve_apy_vault.vy` Vyper smart contract contains all the Kallisto Chaser 
 Vault functionality. The [source code](https://github.com/kallisto-finance/curve-apy-vault) 
-is maintained by the Volume Finance team. The contract is deployed on Ethereum
-at 
+is maintained by the Volume Finance team.
 
 ## Swap Routes
 

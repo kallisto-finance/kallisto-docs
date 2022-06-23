@@ -1,6 +1,6 @@
 # Curve Chaser Vault Scripts
 
-The Volume Finance team has developed scripts to trigger the logic in the 
+The Volume Finance team has developed Python scripts to trigger the logic in the 
 [Chaser Vault smart contract](chaser-vault.md). These scripts are available in
 the same [source code repository](https://github.com/kallisto-finance/curve-apy-vault).
 
@@ -8,6 +8,8 @@ the same [source code repository](https://github.com/kallisto-finance/curve-apy-
 
 The 
 [deposit script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/deposit.py)
+loads in a user's account and uses an ABI to pass arguments to the vault contract and
+a deposit is made from the user's account into the vault.
 
 ```python
 def main():
@@ -22,6 +24,8 @@ def main():
 
 The 
 [withdrawl script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/withdraw.py)
+loads in a user's account and uses an ABI to pass arguments to the vault contract and a
+withdrawal is made from the vault back to the user's account.
 
 ```python
 def main():
@@ -36,6 +40,7 @@ def main():
 
 The 
 [deployer script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/deploy.py)
+passes arguments to deploy the vault smart contract.
 
 ```python
 def main():
@@ -47,6 +52,9 @@ def main():
 
 The 
 [pool updater script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/updatepool.py)
+loads in a user's account, recognizes the current Curve pool in the vault, and passes the
+associated arguments into the vault smart contract to trigger the `update_pool` event to swap
+the Curve pool.
 
 ```python
 def main():
