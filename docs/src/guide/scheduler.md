@@ -100,6 +100,8 @@ struct SwapRoute:
 
 Example for switching from **MIM+3** to the **stETH**:
 
+> The example uses the [updatepool.py script](scripts.md#updatepoolpy).
+
 ```shell
 Vault.update_pool(USDT, 3, [[TRICRYPTO2_INFO[0], WETH, 0, 2, False, True, 
 min_eth_amount_from_swap][WETH, VETH, 0, 0, False, False, 0]], STETH_INFO[0], 

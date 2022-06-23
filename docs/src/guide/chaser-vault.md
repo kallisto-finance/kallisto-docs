@@ -140,7 +140,7 @@ event Updated:
 The Chaser Vault Contract implements ERC20 interfaces
 and follows the interfaces required to interact with Curve.
 
-:::details Key Parametes and Constants
+## Key Parametes
 
 | Key 	| Type 	| Description 	|
 |---	|---	|---	|
@@ -158,6 +158,11 @@ and follows the interfaces required to interact with Curve.
 | `validators` 	| public (HashMap[address, bool]) 	| validators who can update pool 	|
 | `admin` 	| public(address) 	| vault admin 	|
 | `zap_deposit` 	| public(address) 	| ZAP deposit pool address that curve provides 	|
+
+## Key Constants
+
+| Key 	| Type 	| Description 	|
+|---	|---	|---	|
 | `MAX_COINS` 	| constant(uint8) 	| max coin count 	|
 | `VETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE` 	| constant(address) 	| virtual ETH address 	|
 | `WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` 	| constant(address) 	| wrapped ETH address 	|
@@ -165,8 +170,6 @@ and follows the interfaces required to interact with Curve.
 | `INIT_ZAP_DEPOSIT = 0xA79828DF1850E8a3A3064576f380D90aECDD3359` 	| constant(address) 	| initiate ZAP deposit contract address 	|
 | `TRUE_BYTES32 = 0x0000000000000000000000000000000000000000000000000000000000000001` 	| constant(bytes32) 	| conversion True into bytes32 	|
 | `MAX_SWAP = 4` 	| constant(uint256) 	| max count of swap steps 	|
-
-:::
 
 ## Interface
 

@@ -8,8 +8,8 @@ the same [source code repository](https://github.com/kallisto-finance/curve-apy-
 
 The 
 [deposit script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/deposit.py)
-loads in a user's account and uses an ABI to pass arguments to the vault contract and
-a deposit is made from the user's account into the vault.
+loads in a user's account and uses an ABI to pass arguments to the vault contract where
+a deposit is triggered from the user's account into the Chaser vault.
 
 ```python
 def main():
@@ -24,8 +24,8 @@ def main():
 
 The 
 [withdrawl script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/withdraw.py)
-loads in a user's account and uses an ABI to pass arguments to the vault contract and a
-withdrawal is made from the vault back to the user's account.
+loads in a user's account and uses an ABI to pass arguments to the vault contract where
+withdrawal is triggered from the Chaser vault back to the user's account.
 
 ```python
 def main():
@@ -53,8 +53,8 @@ def main():
 The 
 [pool updater script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/updatepool.py)
 loads in a user's account, recognizes the current Curve pool in the vault, and passes the
-associated arguments into the vault smart contract to trigger the `update_pool` event to swap
-the Curve pool.
+associated arguments into the vault smart contract once a *better* Curve pool is found to 
+trigger the `update_pool` event to swap the current pool.
 
 ```python
 def main():
