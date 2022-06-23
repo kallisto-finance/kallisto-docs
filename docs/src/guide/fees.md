@@ -30,13 +30,11 @@ There is a fee for using this vault.
 
 :::
 
-### Fee types
+### Management Fee
 
-* **Performance fee**: A Variable that is deducted from the yield earned every time a vault *harvests* 
-  a strategy.
-* **Management Fee**: A constant fee of 2% that is a flat rate taken from vault deposits over a year. 
-  **The fee is extracted by minting new shares of the vault, thereby diluting vault participants.** 
-  This is done at the time of harvest, and calculated based off of time since the previous harvest.
+A constant fee of 2% that is a flat rate taken from vault deposits over a year. 
+**The fee is extracted by minting new shares of the vault, thereby diluting vault participants.** 
+This function will be called whenever a user deposit or withdrawal is initiated to save on gas.  
 
 For example, a vault takes about **0.0055%** of deposits per day on average 
 $$0.02 \div 365 = 0.000055 $$

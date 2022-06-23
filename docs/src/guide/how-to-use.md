@@ -1,24 +1,18 @@
 # How to use Kallisto
 
-## Connect to Kallisto
-
 Navigate to [kallisto.finance](https://kallisto.finance/).
 
-Connect your wallet.
+* Start by connecting your wallet.
+> We are using MetaMask in this tutorial. Ensure that you have access
+> to your wallet on the browser you are using.
 
-We are using MetaMask in this tutorial. Ensure that you have access
-to your wallet on the browser you are using.
-
-Select the account you would like to connect.
-
-Ensure that you are connecting to official Kallisto finance dApp when
-connecting your wallet.
-
-You will see the vault dashboard that shows the active pool, 
+* Select the account you would like to connect.
+> Ensure that you are connecting to official Kallisto finance dApp when
+> connecting your wallet.
+* You will see the vault dashboard that shows the active pool, 
 the amount of liqudity your account is providing and how much of
 the pool liqudity is yours.
-
-On the dashboard, a user is able to manage their liqudity by either
+* On the dashboard, a user is able to manage their liqudity by either
 adding or withdrawing assets.
 
 ## Deposits
@@ -55,3 +49,16 @@ liquidity:
 2. Return tokens that were moved from the target pool
 
 Liqudity is removed as soon as a user withdraws.
+
+:::details Swapping Optimization
+
+There are three scenarios where a swapping method is needed:
+
+1. When users makes deposits and the deposit token is not in the target pool
+2. When users withdraw, and the 
+3. When the vault switches from one pool to another 
+
+Kallisto uses the [CurveFi SwapRoute](https://github.com/curvefi/curve-js#router-exchange) 
+to obtain the optimal swap route.
+
+:::

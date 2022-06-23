@@ -349,11 +349,11 @@ def safe_transfer_from(_token: address, _from: address, _to: address, _value: ui
 
 ## Common External Functions
 
-These functions are used for accounting related purposes. 
+These functions are used for accounting-related purposes. 
 
 ### `transfer`
 
-Sends token from the vault to another address.
+Sends tokens from the vault to another address.
 
 ```js
 def transfer(_to : address, _value : uint256) -> bool:
@@ -366,7 +366,7 @@ def transfer(_to : address, _value : uint256) -> bool:
 
 ### `transferFrom`
 
-Sends token from one address to another address.
+Sends tokens from one address to another address.
 
 ```js
 def transferFrom(_from : address, _to : address, _value : uint256) -> bool:
@@ -392,7 +392,7 @@ def approve(_spender : address, _value : uint256) -> bool:
 
 ### `increaseAllowance` 
 
-Increases the allowance granted to spender by the caller.
+Increases the allowance granted to the spender by the caller.
 
 ```js
 def increaseAllowance(_spender: address, _value: uint256) -> bool:
@@ -405,7 +405,7 @@ def increaseAllowance(_spender: address, _value: uint256) -> bool:
 
 ### `decreaseAllowance`
 
-Decreases the allowance granted to spender by the caller.
+Decreases the allowance granted to the spender by the caller.
 
 ```js
 def decreaseAllowance(_spender: address, _value: uint256) -> bool:
@@ -418,7 +418,7 @@ def decreaseAllowance(_spender: address, _value: uint256) -> bool:
 
 ### `make_fee`
 
-Charge fees in the form of transfering tokens into the admin account.
+Charge fees in the form of transferring tokens into the admin account.
 
 ```js
 @external
@@ -478,7 +478,13 @@ def deposit(token_address: address, amount: uint256, i: int128, swap_route: DynA
 
 ### `swap`
 
-The [internal swap function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L359) interacts with Curve's smart contract and use a Curve liquidity pool to swap one token for another. The inputs include the Curve liquidity pool's address, the indices for the from_token and to_token, the addresses for the two tokens, the amount to swap for the from_token, and whether the pool is a crypto pool. Upon called, the function swaps the specified amount of the from_token for the to_token.
+The 
+[internal swap function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L359) interacts with Curve's smart contract and uses a Curve liquidity pool to 
+swap one token for another. Upon being called, the function swaps the specified 
+amount of the from_token for the to_token. The inputs include the Curve liquidity 
+pool's address, the indices for the from_token and to_token, the addresses for the 
+two tokens, the amount to swap for the from_token, and whether the pool is a crypto 
+pool.
 
 ```js
 def _swap(pool: address, i: int128, j: int128, from_token: address, to_token: address, is_underlying: bool, from_amount: uint256, is_crypto_pool: bool) -> uint256:
@@ -491,8 +497,8 @@ def _swap(pool: address, i: int128, j: int128, from_token: address, to_token: ad
 The 
 [internal withdraw function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L447) interacts with the Curve smart contracts directly. It approves 
 the transaction and removes liquidity in one token. The function requires inputs 
-specifying the LP tokens and the main pool address to remove liquidity, and returned 
-token address, index and the amount.
+specifying the LP tokens and the main pool address to remove liquidity and returned 
+token address, index, and the amount.
 
 ```js
 def _withdraw(lp_token: address, _main_pool: address, out_token: address, i: int128, out_amount: uint256) -> uint256:
@@ -503,7 +509,7 @@ def _withdraw(lp_token: address, _main_pool: address, out_token: address, i: int
 The 
 [external withdraw function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L500) is a wrapper of the internal withdraw function. 
 It is called when users withdraw liquidity from the vault. The inputs include withdrawal 
-token address and amount, swap route and the minimal amount for swapping. Since the users' 
+token address and amount, swap route, and the minimal amount for swapping. Since the users' 
 withdrawal token may differ from the pool's tokens, a swap will be applied in that case.
 
 ```js
@@ -514,7 +520,7 @@ def withdraw(token_address: address, amount: uint256, i: int128, swap_route: Dyn
 
 The [internal update pool function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L533) moves the vault's liquidity from one pool to another one. 
 It first removes liquidity from the old pool and receives one token. Then, it 
-swaps this token for the new token, and adds liquidity to the new pool. 
+swaps this token for the new token and adds liquidity to the new pool. 
 This is followed by updating the new LP amount. 
 
 ```js
@@ -567,7 +573,7 @@ def set_is_crypto_pool(_new_is_crypto_pool: bool):
 
 ### `set_main_lp_token`
 
-Used by the admin to set the main liqudity pool token. 
+Used by the admin to set the main liquidity pool token. 
 
 ```js
 def set_main_lp_token(_new_main_lp_token: address):

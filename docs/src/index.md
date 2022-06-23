@@ -2,7 +2,7 @@
 home: true
 heroImage: https://pbs.twimg.com/profile_images/1516477796029284353/KmZ8uxmk_400x400.jpg
 tagline: A Decentralized and Automated Yield Chaser
-actionText: Quick Start →
+actionText: Chase APY →
 actionLink: /guide/abstract
 features:
 - title: Yield Maximizer

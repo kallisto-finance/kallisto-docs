@@ -51,14 +51,13 @@ module.exports = {
           children: [
             `abstract`,
             [`introduction`, `Introduction`],
-            `how-to-use`,
+            [`how-to-use`, `Use Kallisto`],
           ]
         },
         {
           title: 'Design',
           collapsable: false,
           children: [
-            'pools',
             'scheduler',
             'fees',
           ]
