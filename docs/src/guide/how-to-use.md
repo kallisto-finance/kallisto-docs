@@ -17,7 +17,7 @@ adding or withdrawing assets.
 
 ## Deposits
 
-If the user deposits a token other than a token of the main pool, Kallisto will swap the token to an 
+If the user deposits a token other than a token of the main pool, Kallisto will swap the token to an
 allowable token using Curve’s swap router to find the optimal swap route.
 
 Upon a user’s deposit, the Kallisto vault adds liquidity to the main pool on Curve.
@@ -55,7 +55,7 @@ Liquidity is removed as soon as a user withdraws.
 There are three scenarios where a swapping method is needed:
 
 1. When users makes deposits and the deposit token is not in the target pool
-2. When users withdraw, and the
+2. When users withdraw a token that is different than the one received from the Curve pool.
 3. When the vault switches from one pool to another
 
 Kallisto uses the [CurveFi SwapRoute](https://github.com/curvefi/curve-js#router-exchange)
