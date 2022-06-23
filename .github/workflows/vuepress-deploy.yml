@@ -10,8 +10,6 @@ on:
 jobs:
   docs:
     runs-on: ubuntu-latest
-    env:
-       working-directory: ./docs
     steps:
       - uses: actions/checkout@v2
         with:
@@ -39,10 +37,12 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --frozen-lockfile
+        working-directory: ./docs
 
       # run build script
       - name: Build VuePress site
         run: yarn build
+        working-directory: ./docs
 
       # please check out the docs of the workflow for more details
       - name: Deploy to GitHub Pages
