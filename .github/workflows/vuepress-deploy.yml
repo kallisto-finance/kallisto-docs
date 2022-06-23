@@ -46,6 +46,7 @@ jobs:
 
       # please check out the docs of the workflow for more details
       - name: Deploy to GitHub Pages
+        working-directory: ./docs
         uses: crazy-max/ghaction-github-pages@v2
         with:
           # deploy to gh-pages branch
