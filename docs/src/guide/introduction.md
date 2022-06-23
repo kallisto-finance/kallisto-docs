@@ -17,12 +17,8 @@ and selects the pool with the highest APY with both base and CRV returns aggrega
 moving liquidity into the optimal pool, the vault is designed to achieve the best return across all
 Curve pools while keeping liquidity risk low.
 
-To chases the APY on Curve, Kallisto uses a scheduler called Paloma. Paloma is a job scheduler built
-using the Cosmos SDK, that can scheduling transactions that control contracts on any other chain.
-This allows Paloma to become responsible for systematic trade and liquidity execution on any decentralized
-exchange. To start, scheduling for Kallisto will be ran off-chain; similar to the liquidation vaults in
-Kallisto  v1, a cron job will execute smart contract functions and run a strategy script written in Python.
-Eventually, the strategy and scheduling will be ran on Paloma.
+To chase the APY on Curve, Kallisto uses an external scheduler called Paloma. To start, scheduling for Kallisto will be ran off-chain; a cron job will execute smart contract functions and run a strategy script written in Python.
+Eventually, the strategy and scheduling will be ran on Paloma, a job scheduler built using the Cosmos SDK, that can schedule transactions that control contracts on any other chain.
 
 ::: danger Use at your own risk
 
