@@ -1,49 +1,116 @@
-# Curve Chaser Vault contract
+# Curve Chaser Vault Contract
 
-<!-- Page is WIP 
+The `curve_apy_vault.vy` Vyper smart contract contains all the Kallisto Chaser 
+Vault functionality. The [source code](https://github.com/kallisto-finance/curve-apy-vault) 
+is maintained by the Volume Finance team. The contract is deployed on Ethereum
+at 
 
-Smart contract doc placeholder
+## Swap Routes
 
--->
+The Chaser Vault defines swap routes for Curve. 
+The `SwapRoute` takes in the addresses of the Curve pools used in the 
+swapping, and defines the incoming token as well as the token to swap into. 
 
-## Define Swap Routes and ERC20 events
-
-First we define the swap routes for Curve. We must know what tokens are coming in and what tokens are going to come out of the swap and what contract addresses on the specific Curve pools will be used.
-
-```Javascript
-# define swap route
+```js
 struct SwapRoute:
-    swap_pool: address # swap pool to use for swap
-    j_token: address # out token from the pool
+    swap_pool: address
+    j_token: address
     i: int128 # in token index
     j: int128 # out token index
     is_underlying: bool # true if exchange underlying coins using exchange_underlying()
     is_crypto_pool: bool # true if token index in uint256
+```
 
-# ERC20 events
+:::details Parameters
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `swap_pool` | address | swap pool to use for swap |
+| `j_token` | address | out token address from the pool |
+| `i` | int128 | token index into the pool |
+| `j` | address | swap pool to use for swap |
+| `is_underlying` | bool | true if exchange underlying coins using exchange_underlying() |
+| `is_crypto_pool` | bool | true if token index type is uint256 |
+
+:::
+
+## Contract Events
+
+### ERC20 events
+
+#### Transfer event 
+
+Transfers from a destination address to a source address.
+
+```js
 event Transfer:
     _from: indexed(address)
     _to: indexed(address)
     _value: uint256
 
+```
+
+#### Approval event 
+
+Grants permission to execute logic.
+
+```js
 event Approval:
     _owner: indexed(address)
     _spender: indexed(address)
     _value: uint256
+```
 
-# Vault events
+### Vault events
+
+#### Deposit event:
+
+```js
 event Deposit:
     _token: indexed(address)
     _from: indexed(address)
     token_amount: uint256
     vault_balance: uint256
+```
 
+:::details Parameters
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `token_address` | address | Address of deposited token |
+| `amount` | uint256 | deposited amount |
+| `i` | int128 | deposit token index of the main pool |
+| `swap_route` | SwapRoute[] | best swap route on Curve |
+| `min_amount` | uint256 | minimum amount of vault balance after deposit |
+
+:::
+
+#### Withdrawal event:
+
+```js
 event Withdraw:
     _token: indexed(address)
     _from: indexed(address)
     token_amount: uint256
     vault_balance: uint256
+```
 
+:::details Parameters
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `token_address` | address | withdrawal token address |
+| `amount` | uint256 | withdrawal vault balance amount (not token amount) |
+| `i` | int128 | withdrawal token index of the main pool |
+| `swap_route` | SwapRoute[] | best swap route on Curve |
+| `min_amount` | uint256 | minimum amount of withdrawn token from withdraw |
+
+:::
+
+Event to switch the Chaser vault position from the current Curve pool to 
+the better Curve pool.
+
+```js
 event Updated:
     old_pool: indexed(address)
     new_pool: indexed(address)
@@ -52,137 +119,178 @@ event Updated:
     to_amount: uint256
 ```
 
-## ERC20 standard interfaces
-Global variables
-```Javascript
-# ERC20 standard interfaces
-name: public(String[64])
-symbol: public(String[32])
+:::details Parameters
 
-balanceOf: public(HashMap[address, uint256])
-allowance: public(HashMap[address, HashMap[address, uint256]])
-totalSupply: public(uint256)
+| Key | Type | Description |
+| --- | --- | --- |
+| `_out_token` | address | token to withdraw from current pool |
+| `old_i` | int128 | withdraw token index of current pool |
+| `swap_route` | SwapRoute[] | best swap route on Curve |
+| `new_pool` | address | Address of new Curve pool |
+| `new_deposit` | address | Address of new Curve deposit contract |
+| `new_i` | int128 | deposit token index of new Curve Pool |
+| `new_pool_coin_count` | uint8 | coin count of new Curve Pool |
+| `new_lp_token` | address | Address of new Curve LP token |
+| `new_is_crypto_pool` | bool | True if new main pool coin index type is uint256 |
+| `new_lp_min_amount` | uint256 | minimum amount of new curve lp token |
 
-paused: public(bool)
-main_pool: public(address) # main curve pool address
-main_pool_coin_count: public(uint8) # (undelying) coin count
-is_crypto_pool: public(bool) # true if main pool coin index type is uint256
-```
+:::
 
-Main deposit address for meta pools
-```Javascript
-main_deposit: public(address)
-main_lp_token: public(address) # Curve LP address of main pool
-validators: public(HashMap[address, bool]) # validators who can update pool
-admin: public(address) # admin
+# ERC20 Standard Interfaces
 
-zap_deposit: public(address) # ZAP deposit pool address that curve provides
-MAX_COINS: constant(uint8) = 8 # MAX_COINS of curve pools
-VETH: constant(address) = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE # Virtual address for ETH coin
-WETH: constant(address) = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
-IS_A_POOL_IN_DEPOSIT: constant(address) = 0x0000000000000000000000000000000000000001 # use address(1) as deposit address for aave pools
-INIT_ZAP_DEPOSIT: constant(address) = 0xA79828DF1850E8a3A3064576f380D90aECDD3359 # init ZAP deposit contract address
-TRUE_BYTES32: constant(bytes32) = 0x0000000000000000000000000000000000000000000000000000000000000001 # conversion True into bytes32
-MAX_SWAP: constant(uint256) = 4 # MAX count of swap steps
-```
+:::details Key Parametes and Constants
 
-Interface
+| Key 	| Type 	| Description 	|
+|---	|---	|---	|
+| `name` 	| public(String[ 64 ]) 	|  	|
+| `symbol` 	| public(String[ 32 ]) 	|  	|
+| `balanceOf` 	| public(HashMap[address, uint256]) 	|  	|
+| `allowance` 	| public(HashMap[address, HashMap[address, uint256]]) 	|  	|
+| `totalSupply` 	| public(uint256) 	|  	|
+| `paused` 	| public(bool) 	|  	|
+| `main_pool` 	| public(address) 	| main curve pool address 	|
+| `main_pool_coin_count` 	| public(uint8) 	| coin count 	|
+| `is_crypto_pool` 	| public(bool) 	| true if main pool coin index type is uint256 	|
+| `main_deposit` 	| public(address) 	| main deposit address for meta pools; (0) for base pools, (1) for lending pools 	|
+| `main_lp_token` 	| public(address) 	| the main token in the LPCurve LP address of main pool 	|
+| `validators` 	| public ( HashMap [ address ,  bool ]) 	| validators who can update pool 	|
+| `admin` 	| public ( address ) 	| vault admin 	|
+| `zap_deposit` 	| public ( address ) 	| ZAP deposit pool address that curve provides 	|
+| `MAX_COINS` 	| constant(uint8) 	| max coin count 	|
+| `VETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE` 	| constant(address) 	| virtual ETH address 	|
+| `WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` 	| constant(address) 	| wrapped ETH address 	|
+| `IS_A_POOL_IN_DEPOSIT = 0x0000000000000000000000000000000000000001` 	| constant(address) 	| use address(1) as deposit address for aave pools 	|
+| `INIT_ZAP_DEPOSIT = 0xA79828DF1850E8a3A3064576f380D90aECDD3359` 	| constant(address) 	| initiate ZAP deposit contract address 	|
+| `TRUE_BYTES32 = 0x0000000000000000000000000000000000000000000000000000000000000001` 	| constant ( bytes32 ) 	| conversion True into bytes32 	|
+| `MAX_SWAP = 4` 	| constant ( uint256 ) 	| max count of swap steps 	|
 
-```Javascript
+:::
+
+## Interface
+
+### `CrvPool`
+
+```js
 interface CrvPool:
     def remove_liquidity_one_coin(token_amount: uint256, i: int128, min_amount: uint256): nonpayable
     def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256): payable
     def exchange_underlying(i: int128, j: int128, dx: uint256, min_dy: uint256): payable
+```
 
+### `CryptoPool`
+
+```js
 interface CryptoPool:
     def exchange(i: uint256, j: uint256, dx: uint256, min_dy: uint256): payable
     def exchange_underlying(i: uint256, j: uint256, dx: uint256, min_dy: uint256): payable
     def remove_liquidity_one_coin(token_amount: uint256, i: uint256, min_amount: uint256): nonpayable
+```
 
+### `CrvAPool`
+
+```js
 interface CrvAPool:
     def remove_liquidity_one_coin(token_amount: uint256, i: int128, min_amount: uint256, use_underlying: bool): nonpayable
+```
 
+### `CryptoAPool`
+
+```js
 interface CryptoAPool:
     def remove_liquidity_one_coin(token_amount: uint256, i: uint256, min_amount: uint256, use_underlying: bool): nonpayable
+```
 
+### `CrvZapDeposit`
+
+```js
 interface CrvZapDeposit:
     def remove_liquidity_one_coin(_pool: address, token_amount: uint256, i: int128, min_amount: uint256): nonpayable
+```
 
+### `CryptoZapDeposit`
+
+```js
 interface CryptoZapDeposit:
     def remove_liquidity_one_coin(_pool: address, token_amount: uint256, i: uint256, min_amount: uint256): nonpayable
+```
 
+### `CrvDeposit`
+
+```js
 interface CrvDeposit:
     def pool() -> address: view
+```
 
+### `ERC20`
+
+```js
 interface ERC20:
     def balanceOf(_to: address) -> uint256: view
+```
 
+### `WrappedEth`
+
+```
 interface WrappedEth:
     def deposit(): payable
     def withdraw(amount: uint256): nonpayable
 ```
 
-## Vault initiation
+# Vault Initiation
 
-The initiation function is called to set up the vault by specifying the name, symbol, admin, validators, main pool and main deposit. 
-```Javascript
-@external
+The 
+[external initiation function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L106) is called to set up the vault by specifying the **name**, 
+**token symbol**, **vault admin**, **validators**, **main Curve pool**, and **main deposit**. 
+
+```js
 def __init__(_name: String[64], _symbol: String[32], _main_pool: address, _main_deposit: address, _main_pool_coin_count: uint8, _main_lp_token: address, _is_crypto_pool: bool):
-    """
-    @notice Contract constructor
-    @param _name ERC20 standard name
-    @param _symbol ERC20 standard symbol
-    @param _main_pool main curve pool
-    @param _main_deposit main deposit address
-    @param _main_pool_coin_count coin count of main pool
-    @param _main_lp_token curve LP token address of the main pool
-    @param _is_crypto_pool true if main pool coin index type is uint256
-    """
-    self.name = _name
-    self.symbol = _symbol
-    self.admin = msg.sender
-    self.validators[msg.sender] = True
-    assert _main_pool != ZERO_ADDRESS, "Wrong Pool"
-    self.main_pool = _main_pool
-    self.main_deposit = _main_deposit
-    assert _main_pool_coin_count >= 2 and _main_pool_coin_count <= MAX_COINS, "Wrong Pool Coin Count"
-    self.main_pool_coin_count = _main_pool_coin_count
-    assert _main_lp_token != ZERO_ADDRESS, "Wrong Pool"
-    self.main_lp_token = _main_lp_token
-    self.zap_deposit = INIT_ZAP_DEPOSIT
-    self.is_crypto_pool = _is_crypto_pool
 ```
 
-## ERC20 common functions
+# ERC20 Common Functions
 
-Define internal functions for mint, burn, safe transfer and safe transfer from alternative addresses.
+:::details Function types
 
-mint: mint a token specified by its address at a specific amount
+- **@public**: public accessibility
+- **@internal**: only the contract itself and contracts deriving from it can access
+- **@external**: can only be accessed externally
+- **@private**: can be accessed only from the contract itself
 
-burn: burn a token specified by its address at a specific amount
+:::
 
-safe_approve: approve the use of a token by a smart contract 
+## Common Internal Functions
 
-safe_transfer: transfer token from the vault to another address
+Internal functions are defined for minting, burning, safe transfer and safe transfer 
+from alternative addresses.
 
-safe_transfer_from: transfer token from one address to another address
+### `mint`
 
-```Javascript
-@internal
+Mints a token specified by its address at a specific amount.
+
+```js
 def _mint(_to: address, _value: uint256):
     assert _to != ZERO_ADDRESS # dev: zero address
     self.totalSupply += _value
     self.balanceOf[_to] += _value
     log Transfer(ZERO_ADDRESS, _to, _value)
+```
 
-@internal
+### `burn`
+
+Burn a token specified by its address at a specific amount.
+
+```js
 def _burn(_to: address, _value: uint256):
     assert _to != ZERO_ADDRESS # dev: zero address
     self.totalSupply -= _value
     self.balanceOf[_to] -= _value
     log Transfer(_to, ZERO_ADDRESS, _value)
+```
 
-@internal
+### `safe_approve`
+
+Approves the use of a token by a smart contract.
+
+```js
 def safe_approve(_token: address, _to: address, _value: uint256):
     _response: Bytes[32] = raw_call(
         _token,
@@ -196,7 +304,13 @@ def safe_approve(_token: address, _to: address, _value: uint256):
     if len(_response) > 0:
         assert convert(_response, bool) # dev: failed approve
 
-@internal
+```
+
+### `safe_transfer` 
+
+Transfers a token from the vault to another address.
+
+```js
 def safe_transfer(_token: address, _to: address, _value: uint256):
     _response: Bytes[32] = raw_call(
         _token,
@@ -209,8 +323,13 @@ def safe_transfer(_token: address, _to: address, _value: uint256):
     )  # dev: failed transfer
     if len(_response) > 0:
         assert convert(_response, bool) # dev: failed transfer
+```
 
-@internal
+### `safe_transfer_from`
+
+Transfers a token from one address to another address.
+
+```js
 def safe_transfer_from(_token: address, _from: address, _to: address, _value: uint256):
     _response: Bytes[32] = raw_call(
         _token,
@@ -226,391 +345,28 @@ def safe_transfer_from(_token: address, _from: address, _to: address, _value: ui
         assert convert(_response, bool) # dev: failed transfer from
 ```
 
-## Deposit
+## Common External Functions
 
-The internal deposit function interacts Curve's smart contracts and adds liquidity in one token into a Curve liquidity pool.
-```Javascript
-@internal
-def _deposit(main_pool_: address, _main_deposit: address, _main_pool_coin_count: uint8, i: int128, in_token: address, in_amount: uint256):
-    """
-    @notice deposit to curve pool using one token only
-    @param _main_pool main curve pool to withdraw tokens
-    @param _main_deposit
-        deposit contract to main pool
-        address(0) if we can deposit does not exist
-        address(1) if the main pool is lending pool and add_liquidity() function requires boolean argument more
-    @param _main_pool_coin_count (underlying) coin count of the main curve pool
-    @param i in token index
-    @param in_amount token in amount
-    """
-    _main_pool: address = main_pool_
-    payload: Bytes[320] = empty(Bytes[320])
-    length: uint256 = len(payload)
-    # payload using only one coin
-    if i == 0:
-        payload = concat(convert(in_amount, bytes32), EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32)
-    elif i == 1:
-        payload = concat(EMPTY_BYTES32, convert(in_amount, bytes32), EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32)
-    elif i == 2:
-        payload = concat(EMPTY_BYTES32, EMPTY_BYTES32, convert(in_amount, bytes32), EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32)
-    elif i == 3:
-        payload = concat(EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, convert(in_amount, bytes32), EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32)
-    elif i == 4:
-        payload = concat(EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, convert(in_amount, bytes32), EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32)
-    elif i == 5:
-        payload = concat(EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, convert(in_amount, bytes32), EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32)
-    elif i == 6:
-        payload = concat(EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, convert(in_amount, bytes32), EMPTY_BYTES32, EMPTY_BYTES32)
-    else:
-        payload = concat(EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, EMPTY_BYTES32, convert(in_amount, bytes32), EMPTY_BYTES32)
-
-    m_id: Bytes[4] = empty(Bytes[4])
-    if _main_deposit == IS_A_POOL_IN_DEPOSIT: # if main_deposit is address(1), mail_pool requires one argument more
-        if _main_pool_coin_count == 2:
-            m_id = method_id("add_liquidity(uint256[2],uint256,bool)")
-            payload = concat(slice(payload, 0, 96), TRUE_BYTES32)
-        elif _main_pool_coin_count == 3:
-            m_id = method_id("add_liquidity(uint256[3],uint256,bool)")
-            payload = concat(slice(payload, 0, 128), TRUE_BYTES32)
-        elif _main_pool_coin_count == 4:
-            m_id = method_id("add_liquidity(uint256[4],uint256,bool)")
-            payload = concat(slice(payload, 0, 160), TRUE_BYTES32)
-        elif _main_pool_coin_count == 5:
-            m_id = method_id("add_liquidity(uint256[5],uint256,bool)")
-            payload = concat(slice(payload, 0, 192), TRUE_BYTES32)
-        elif _main_pool_coin_count == 6:
-            m_id = method_id("add_liquidity(uint256[6],uint256,bool)")
-            payload = concat(slice(payload, 0, 224), TRUE_BYTES32)
-        elif _main_pool_coin_count == 7:
-            m_id = method_id("add_liquidity(uint256[7],uint256,bool)")
-            payload = concat(slice(payload, 0, 256), TRUE_BYTES32)
-        else:
-            m_id = method_id("add_liquidity(uint256[8],uint256,bool)")
-            payload = concat(slice(payload, 0, 288), TRUE_BYTES32)
-    elif _main_deposit == self.zap_deposit: # zap deposit has different arguments
-        if _main_pool_coin_count == 2:
-            m_id = method_id("add_liquidity(address,uint256[2],uint256)")
-            payload = concat(convert(_main_pool, bytes32), slice(payload, 0, 96))
-        elif _main_pool_coin_count == 3:
-            m_id = method_id("add_liquidity(address,uint256[3],uint256)")
-            payload = concat(convert(_main_pool, bytes32), slice(payload, 0, 128))
-        elif _main_pool_coin_count == 4:
-            m_id = method_id("add_liquidity(address,uint256[4],uint256)")
-            payload = concat(convert(_main_pool, bytes32), slice(payload, 0, 160))
-        elif _main_pool_coin_count == 5:
-            m_id = method_id("add_liquidity(address,uint256[5],uint256)")
-            payload = concat(convert(_main_pool, bytes32), slice(payload, 0, 192))
-        elif _main_pool_coin_count == 6:
-            m_id = method_id("add_liquidity(address,uint256[6],uint256)")
-            payload = concat(convert(_main_pool, bytes32), slice(payload, 0, 224))
-        elif _main_pool_coin_count == 7:
-            m_id = method_id("add_liquidity(address,uint256[7],uint256)")
-            payload = concat(convert(_main_pool, bytes32), slice(payload, 0, 256))
-        else:
-            m_id = method_id("add_liquidity(address,uint256[8],uint256)")
-            payload = concat(convert(_main_pool, bytes32), slice(payload, 0, 288))
-    else: # common pool/deposit add_liquidity function
-        if _main_pool_coin_count == 2:
-            m_id = method_id("add_liquidity(uint256[2],uint256)")
-            payload = slice(payload, 0, 96)
-        elif _main_pool_coin_count == 3:
-            m_id = method_id("add_liquidity(uint256[3],uint256)")
-            payload = slice(payload, 0, 128)
-        elif _main_pool_coin_count == 4:
-            m_id = method_id("add_liquidity(uint256[4],uint256)")
-            payload = slice(payload, 0, 160)
-        elif _main_pool_coin_count == 5:
-            m_id = method_id("add_liquidity(uint256[5],uint256)")
-            payload = slice(payload, 0, 192)
-        elif _main_pool_coin_count == 6:
-            m_id = method_id("add_liquidity(uint256[6],uint256)")
-            payload = slice(payload, 0, 224)
-        elif _main_pool_coin_count == 7:
-            m_id = method_id("add_liquidity(uint256[7],uint256)")
-            payload = slice(payload, 0, 256)
-        else:
-            m_id = method_id("add_liquidity(uint256[8],uint256)")
-            payload = slice(payload, 0, 288)
- 
-    if _main_deposit != ZERO_ADDRESS and _main_deposit != IS_A_POOL_IN_DEPOSIT:
-        _main_pool = _main_deposit
-    if in_token == VETH:
-        raw_call(
-            _main_pool,
-            concat(
-                m_id,
-                payload
-            ),
-            value=in_amount
-        )
-    else:
-        self.safe_approve(in_token, _main_pool, in_amount)
-        raw_call(
-            _main_pool,
-            concat(
-                m_id,
-                payload
-            )
-        )
-```
-
-The internal swap function interacts with Curve's smart contract and use a Curve liquidity pool to swap one token for another. The inputs include the Curve liquidity pool's address, the indices for the from_token and to_token, the addresses for the two tokens, the amount to swap for the from_token, and whether the pool is a crypto pool. Upon called, the function swaps the specified amount of the from_token for the to_token.   
-```Javascript
-@internal
-def _swap(pool: address, i: int128, j: int128, from_token: address, to_token: address, is_underlying: bool, from_amount: uint256, is_crypto_pool: bool) -> uint256:
-    """
-    @notice swap function using curve pool
-    @param pool swap pool to exchange tokens
-    @param i from_token index
-    @param j to_token index
-    @param from_token token address to put into swap pool
-    @param to_token token address to get out from swap pool
-    @param is_underlying true for meta pools
-    @param from_amount from_token amount
-    @param is_crypto_pool true for the pools that use uint256 for indexes
-    """
-    to_amount: uint256 = 0
-    if to_token == VETH: # Wrapping ETH
-        if from_token == WETH:
-            WrappedEth(WETH).withdraw(from_amount)
-            return from_amount
-        to_amount = self.balance
-    elif from_token == VETH and to_token == WETH: # unwrapping WETH
-        WrappedEth(WETH).deposit(value=from_amount)
-        return from_amount
-    else:
-        to_amount = ERC20(to_token).balanceOf(self)
-        
-    if is_crypto_pool:
-        # if the pool requires uint256 type indexes
-        if from_token == VETH:
-            CryptoPool(pool).exchange(convert(i, uint256), convert(j, uint256), from_amount, 0, value=from_amount)
-        else:
-            self.safe_approve(from_token, pool, from_amount)
-            if is_underlying:
-                CryptoPool(pool).exchange_underlying(convert(i, uint256), convert(j, uint256), from_amount, 0)
-            else:
-                CryptoPool(pool).exchange(convert(i, uint256), convert(j, uint256), from_amount, 0)
-    else:
-        # if the pool requires int128 type indexes
-        if from_token == VETH:
-            CrvPool(pool).exchange(i, j, from_amount, 0, value=from_amount)
-        else:
-            self.safe_approve(from_token, pool, from_amount)
-            if is_underlying:
-                CrvPool(pool).exchange_underlying(i, j, from_amount, 0)
-            else:
-                CrvPool(pool).exchange(i, j, from_amount, 0)
-    # calculate swapped amount
-    if to_token == VETH:
-        to_amount = self.balance - to_amount
-    else:
-        to_amount = ERC20(to_token).balanceOf(self) - to_amount
-    return to_amount
-```
-
-The external deposit function works as a wrapper of the internal deposit and swap functions. It is called when users deposit their tokens into the vault. Upon called, it swaps some of the deposit tokens for the tokens required by the pool, and adds liquidity.  
-
-```Javascript
-@external
-@payable
-@nonreentrant("lock")
-def deposit(token_address: address, amount: uint256, i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], min_amount: uint256) -> uint256:
-    """
-    @notice Deposit token
-    @param token_address deposit token address
-    @param amount deposit token amount
-    @param i deposit token index of the main pool (even after swap)
-    @param swap_route swap route before deposit
-    @param min_amount minimum amount of vault balance after deposit
-    @return added balance of vault
-    """
-    assert not self.paused, "Paused"
-    self.safe_transfer_from(token_address, msg.sender, self, amount)
-    in_token: address = token_address
-    in_amount: uint256 = amount
-    for route in swap_route:
-        # swap tokens with swap route
-        if route.swap_pool != ZERO_ADDRESS:
-            in_amount = self._swap(route.swap_pool, route.i, route.j, in_token, route.j_token, route.is_underlying, in_amount, route.is_crypto_pool)
-            in_token = route.j_token
-    _main_lp_token: address = self.main_lp_token
-    old_balance: uint256 = ERC20(_main_lp_token).balanceOf(self)
-    self._deposit(self.main_pool, self.main_deposit, self.main_pool_coin_count, i, in_token, in_amount)
-    new_balance: uint256 = ERC20(_main_lp_token).balanceOf(self)
-    assert new_balance > old_balance, "Deposit failed"
-    total_supply: uint256 = self.totalSupply
-    # calculate mint amount as increas LP token amount * totalSupply / old LP balance
-    if total_supply > 0:
-        new_balance = (new_balance - old_balance) * total_supply / old_balance
-    assert new_balance >= min_amount, "High Slippage"
-    self._mint(msg.sender, new_balance)
-    log Deposit(token_address, msg.sender, amount, new_balance)
-    return new_balance
-```
-
-## Withdraw
-The internal withdraw function interacts with the Curve smart contracts directly. It approves the transaction and removes liquidity in one token. The function requires inputs specifying the LP tokens and the main pool address to remove liquidity, and returned token address, index and the amount.
-```Javascript
-@internal
-def _withdraw(lp_token: address, _main_pool: address, out_token: address, i: int128, out_amount: uint256) -> uint256:
-    """
-    @notice withdraw from curve pool using one token only
-    @param lp_token main curve LP address
-    @param _main_pool main curve pool to withdraw tokens
-    @param out_token token address to withdraw from the main curve pool
-    @param i out token index
-    @param out_amount curve LP token amount to withdraw from curve pool
-    @return withdrawn token amount
-    """
-    _main_deposit: address = self.main_deposit
-    old_balance: uint256 = ERC20(out_token).balanceOf(self)
-    if self.is_crypto_pool:
-    # if the pool requires uint256 type indexes
-        if _main_deposit == IS_A_POOL_IN_DEPOSIT:
-        # if main_deposit is address(1), mail_pool requires one argument more
-            self.safe_approve(lp_token, _main_pool, out_amount)
-            CryptoAPool(_main_pool).remove_liquidity_one_coin(out_amount, convert(i, uint256), 1, True)
-        elif _main_deposit == ZERO_ADDRESS:
-        # we can withdraw from the main pool directly
-            self.safe_approve(lp_token, _main_pool, out_amount)
-            CryptoPool(_main_pool).remove_liquidity_one_coin(out_amount, convert(i, uint256), 1)
-        elif _main_deposit == self.zap_deposit:
-        # withdraw using ZAP deposit contract
-            self.safe_approve(lp_token, _main_deposit, out_amount)
-            CryptoZapDeposit(_main_deposit).remove_liquidity_one_coin(_main_pool, out_amount, convert(i, uint256), 1)
-        else:
-        # withdraw using deposit contract
-            self.safe_approve(lp_token, _main_deposit, out_amount)
-            CryptoPool(_main_deposit).remove_liquidity_one_coin(out_amount, convert(i, uint256), 1)
-    else:
-    # if the pool requires int128 type indexes
-        if _main_deposit == IS_A_POOL_IN_DEPOSIT:
-        # if main_deposit is address(1), mail_pool requires one argument more
-            self.safe_approve(lp_token, _main_pool, out_amount)
-            CrvAPool(_main_pool).remove_liquidity_one_coin(out_amount, i, 1, True)
-        elif _main_deposit == ZERO_ADDRESS:
-        # we can withdraw from the main pool directly
-            self.safe_approve(lp_token, _main_pool, out_amount)
-            CrvPool(_main_pool).remove_liquidity_one_coin(out_amount, i, 1)
-        elif _main_deposit == self.zap_deposit:
-        # withdraw using ZAP deposit contract
-            self.safe_approve(lp_token, _main_deposit, out_amount)
-            CrvZapDeposit(_main_deposit).remove_liquidity_one_coin(_main_pool, out_amount, i, 1)
-        else:
-        # withdraw using deposit contract
-            self.safe_approve(lp_token, _main_deposit, out_amount)
-            CrvPool(_main_deposit).remove_liquidity_one_coin(out_amount, i, 1)
-    # returns withdrawn token amount
-    return ERC20(out_token).balanceOf(self) - old_balance
-```
-The external withdraw function is a wrapper of the internal withdraw function. It is called when users withdraw liquidity from the vault. The inputs include withdrawal token address and amount, swap route and the minimal amount for swapping. Since the users' withdrawal token may differ from the pool's tokens, a swap will be applied in that case. 
-```Javascript
-@external
-@nonreentrant("lock")
-def withdraw(token_address: address, amount: uint256, i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], min_amount: uint256) -> uint256:
-    """
-    @notice Withdraw token
-    @param token_address withdraw token address
-    @param amount withdraw vault balance amount(not token amount)
-    @param i withdraw token index of the main pool
-    @param swap_route token swap route after withdraw from curve pool, users will get the final token of the swap route
-    @param min_amount minimum amount of withdrawn token from withdraw
-    @return withdrawn token amount
-    """
-    out_token: address = token_address
-    lp_token: address = self.main_lp_token
-    out_amount: uint256 = amount * ERC20(lp_token).balanceOf(self) / self.totalSupply
-    _main_pool: address = self.main_pool
-    # withdraw token from the curve pool
-    out_amount = self._withdraw(lp_token, _main_pool, out_token, i, out_amount)
-    self._burn(msg.sender, amount)
-    for route in swap_route:
-        # swap token with swap route
-        if route.swap_pool != ZERO_ADDRESS:
-            out_amount = self._swap(route.swap_pool, route.i, route.j, out_token, route.j_token, route.is_underlying, out_amount, route.is_crypto_pool)
-            out_token = route.j_token
-    assert out_amount >= min_amount, "High Slippage"
-    # transfer token to user
-    if out_token == VETH:
-        send(msg.sender, out_amount)
-    else:
-        self.safe_transfer(out_token, msg.sender, out_amount)
-    log Withdraw(out_token, msg.sender, out_amount, amount)
-    return out_amount
-```
-
-## Update pool
-
-The update pool function moves the vault's liquidity from one pool to another one. It first removes liquidity from the old pool and receives one token. Then it swaps this token for the new token, and adds liquidity to the new pool. This is followed by updating the new LP amount. 
-```Javascript
-@external
-@nonreentrant('lock')
-def update_pool(_out_token: address, old_i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], new_pool: address, new_deposit: address, new_i: int128, new_pool_coin_count: uint8, new_lp_token: address, new_is_crypto_pool: bool, new_lp_min_amount: uint256):
-    """
-    @notice update pool information
-    @param _out_token withdraw token address from the old pool
-    @param old_i withdraw token index of the old pool
-    @param swap_route token swap route from withdrawing to depositing into the new pool
-    @param new_pool new main curve pool
-    @param new_deposit new main deposit address
-    @param new_i deposit token index of new main pool
-    @param new_pool_coin_count coin count of new main pool
-    @param new_lp_token curve LP token address of the new main pool
-    @param new_is_crypto_pool true if new main pool coin index type is uint256
-    @param new_lp_min_amount minimum amount of new curve lp token
-    """
-    assert self.validators[msg.sender], "Not Validator"
-    out_token: address = _out_token
-    lp_token: address = self.main_lp_token
-    out_amount: uint256 = ERC20(lp_token).balanceOf(self)
-    from_amount: uint256 = out_amount
-    _main_pool: address = self.main_pool
-    # withdraw token from the old pool
-    out_amount = self._withdraw(lp_token, _main_pool, out_token, old_i, out_amount)
-    for route in swap_route:
-        # swap token with swap route
-        if route.swap_pool != ZERO_ADDRESS:
-            out_amount = self._swap(route.swap_pool, route.i, route.j, out_token, route.j_token, route.is_underlying, out_amount, route.is_crypto_pool)
-            out_token = route.j_token
-    # deposit token into the new pool
-    self._deposit(new_pool, new_deposit, new_pool_coin_count, new_i, out_token, out_amount)
-    to_amount: uint256 = ERC20(new_lp_token).balanceOf(self)
-    assert to_amount >= new_lp_min_amount, "High Slippage"
-    # update states
-    self.main_pool = new_pool
-    self.main_deposit = new_deposit
-    self.main_pool_coin_count = new_pool_coin_count
-    self.main_lp_token = new_lp_token
-    self.is_crypto_pool = new_is_crypto_pool
-    log Updated(_main_pool, new_pool, block.timestamp, from_amount, to_amount)
-```
-
-## Other external functions
 These functions are used for accounting related purposes. 
 
-transfer: sends token from the vault to another address
+### `transfer`
 
-transferFrom: sends token from one address to another address
+Sends token from the vault to another address.
 
-approve: 
-
-make fee: charge fees in the form of transfering tokens into the admin account
-
-transfer_admin: transfer admin address to another one
-
-set_validator: register new validator or remove validator
-
-```Javascript
-@external
+```js
 def transfer(_to : address, _value : uint256) -> bool:
     assert _to != ZERO_ADDRESS # dev: zero address
     self.balanceOf[msg.sender] -= _value
     self.balanceOf[_to] += _value
     log Transfer(msg.sender, _to, _value)
     return True
+```
 
-@external
+### `transferFrom`
+
+Sends token from one address to another address.
+
+```js
 def transferFrom(_from : address, _to : address, _value : uint256) -> bool:
     assert _to != ZERO_ADDRESS # dev: zero address
     self.balanceOf[_from] -= _value
@@ -618,37 +374,56 @@ def transferFrom(_from : address, _to : address, _value : uint256) -> bool:
     self.allowance[_from][msg.sender] -= _value
     log Transfer(_from, _to, _value)
     return True
+```
 
-@external
+### `approve` 
+
+```js
 def approve(_spender : address, _value : uint256) -> bool:
     assert _value == 0 or self.allowance[msg.sender][_spender] == 0
     self.allowance[msg.sender][_spender] = _value
     log Approval(msg.sender, _spender, _value)
     return True
+```
 
-@external
+### `increaseAllowance` 
+
+```js
 def increaseAllowance(_spender: address, _value: uint256) -> bool:
     allowance: uint256 = self.allowance[msg.sender][_spender]
     allowance += _value
     self.allowance[msg.sender][_spender] = allowance
     log Approval(msg.sender, _spender, allowance)
     return True
+```
 
-@external
+### `decreaseAllowance`
+
+```js
 def decreaseAllowance(_spender: address, _value: uint256) -> bool:
     allowance: uint256 = self.allowance[msg.sender][_spender]
     allowance -= _value
     self.allowance[msg.sender][_spender] = allowance
     log Approval(msg.sender, _spender, allowance)
     return True
-    
+```
+
+### `make_fee`
+
+Charge fees in the form of transfering tokens into the admin account.
+
+```js
 @external
 def make_fee(amount: uint256):
-# make admin fee to the admin address
     assert msg.sender == self.admin
     self._mint(msg.sender, amount)
+```
 
-@external
+### `transfer_admin`
+
+Transfer the admin address to another one.
+
+```js
 def transfer_admin(_admin: address):
 # transfer admin permission
     old_admin: address = self.admin
@@ -656,59 +431,154 @@ def transfer_admin(_admin: address):
     self.validators[old_admin] = False
     self.validators[msg.sender] = True
     self.admin = _admin
+```
 
-@external
+### `set_validator`
+
+Register new validator or remove a current validator.
+
+```js
 def set_validator(_validator: address, _value: bool):
-# register new validator or remove validator
     assert msg.sender == self.admin
     self.validators[_validator] = _value
+```
 
-@external
-@payable
+### `payable`
+
+```js
 def __default__():
-# to make possible to receive ETH
     pass
 ```
 
-## emergency functions
-The emergency functions provide security for the vault and can only be executed by the admin.
+## Functions that Interact with Curve
 
-set_main_pool: used by the admin to set the main pool
+### `deposit`
 
-pause:  used by the admin to pause all functionality 
+#### `@internal`
 
-```Javascript
-@external
+The 
+[internal deposit function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L413) interacts with Curve's smart contracts and 
+adds liquidity for one token into a Curve liquidity pool.
+
+```js
+def _deposit(main_pool_: address, _main_deposit: address, _main_pool_coin_count: uint8, i: int128, in_token: address, in_amount: uint256): 
+```
+
+#### `@external`
+
+The 
+[external deposit function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L413) works as a wrapper of the internal deposit and swap functions. 
+It is called when users deposit their tokens into the vault. Upon being called, it swaps 
+some of the deposit tokens for the tokens required by the pool, and adds liquidity.  
+
+```js
+def deposit(token_address: address, amount: uint256, i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], min_amount: uint256) -> uint256:
+```
+
+### `swap`
+
+The [internal swap function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L359) interacts with Curve's smart contract and use a Curve liquidity pool to swap one token for another. The inputs include the Curve liquidity pool's address, the indices for the from_token and to_token, the addresses for the two tokens, the amount to swap for the from_token, and whether the pool is a crypto pool. Upon called, the function swaps the specified amount of the from_token for the to_token.
+
+```js
+def _swap(pool: address, i: int128, j: int128, from_token: address, to_token: address, is_underlying: bool, from_amount: uint256, is_crypto_pool: bool) -> uint256:
+```
+
+### `withdraw`
+
+#### `@internal`
+
+The 
+[internal withdraw function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L447) interacts with the Curve smart contracts directly. It approves 
+the transaction and removes liquidity in one token. The function requires inputs 
+specifying the LP tokens and the main pool address to remove liquidity, and returned 
+token address, index and the amount.
+
+```js
+def _withdraw(lp_token: address, _main_pool: address, out_token: address, i: int128, out_amount: uint256) -> uint256:
+```
+
+#### `@external`
+
+The 
+[external withdraw function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L500) is a wrapper of the internal withdraw function. 
+It is called when users withdraw liquidity from the vault. The inputs include withdrawal 
+token address and amount, swap route and the minimal amount for swapping. Since the users' 
+withdrawal token may differ from the pool's tokens, a swap will be applied in that case.
+
+```js
+def withdraw(token_address: address, amount: uint256, i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], min_amount: uint256) -> uint256:
+```
+
+### `update_pool`
+
+The [internal update pool function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L533) moves the vault's liquidity from one pool to another one. 
+It first removes liquidity from the old pool and receives one token. Then, it 
+swaps this token for the new token, and adds liquidity to the new pool. 
+This is followed by updating the new LP amount. 
+
+```js
+def update_pool(_out_token: address, old_i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], new_pool: address, new_deposit: address, new_i: int128, new_pool_coin_count: uint8, new_lp_token: address, new_is_crypto_pool: bool, new_lp_min_amount: uint256):
+```
+
+## Emergency Functions
+
+Emergency functions provide security for the vault and can only be executed by the admin.
+
+### `set_main_pool`
+
+Used by the admin to set the main pool.
+
+```js
 def set_main_pool(_new_pool: address):
     assert msg.sender == self.admin
     self.main_pool = _new_pool
+```
 
-@external
+### `set_main_deposit`
+
+```js
 def set_main_deposit(_new_deposit: address):
     assert msg.sender == self.admin
     self.main_deposit = _new_deposit
+```
 
-@external
+### `set_main_pool_coin_count`
+
+```js
 def set_main_pool_coin_count(_new_main_pool_coin_count: uint8):
     assert msg.sender == self.admin
     self.main_pool_coin_count = _new_main_pool_coin_count
+```
 
-@external
+### `set_is_crypto_pool`
+
+```js
 def set_is_crypto_pool(_new_is_crypto_pool: bool):
     assert msg.sender == self.admin
     self.is_crypto_pool = _new_is_crypto_pool
+```
 
-@external
+### `set_main_lp_token`
+
+```js
 def set_main_lp_token(_new_main_lp_token: address):
     assert msg.sender == self.admin
     self.main_lp_token = _new_main_lp_token
+```
 
-@external
+### `set_zap_deposit`
+
+```js
 def set_zap_deposit(_new_zap_deposit: address):
     assert msg.sender == self.admin
     self.zap_deposit = _new_zap_deposit
+```
 
-@external
+### `pause` 
+
+Used by the admin to pause all functionality. 
+
+```js
 def pause(_paused: bool):
     assert msg.sender == self.admin
     self.paused = _paused

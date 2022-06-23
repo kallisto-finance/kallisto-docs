@@ -60,13 +60,7 @@ module.exports = {
             'pools',
             'scheduler',
             'fees',
-          ]
-        },
-        {
-          title: 'Smart Contracts',
-          collapsable: false,
-          children: [
-            'chaser-vault',
+            ['chaser-vault', 'Smart Contracts']
           ]
         },
       ],
