@@ -60,9 +60,6 @@ module.exports = {
             'pools',
             'scheduler',
             'fees',
-            ['chaser-vault', 'Smart Contracts'],
-            ['scripts', 'Scripts'],
-            ['vault-ui', 'Vault UI'],
           ]
         },
         {
