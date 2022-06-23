@@ -138,6 +138,9 @@ event Updated:
 
 # ERC20 Standard Interfaces
 
+The Chaser Vault Contract implements ERC20 interfaces
+and follows the interfaces required to interact with Curve.
+
 :::details Key Parametes and Constants
 
 | Key 	| Type 	| Description 	|
@@ -230,7 +233,7 @@ interface ERC20:
 
 ### `WrappedEth`
 
-```
+```js
 interface WrappedEth:
     def deposit(): payable
     def withdraw(amount: uint256): nonpayable
@@ -378,6 +381,8 @@ def transferFrom(_from : address, _to : address, _value : uint256) -> bool:
 
 ### `approve` 
 
+Sets the amount as the allowance of spender over the caller’s tokens.
+
 ```js
 def approve(_spender : address, _value : uint256) -> bool:
     assert _value == 0 or self.allowance[msg.sender][_spender] == 0
@@ -387,6 +392,8 @@ def approve(_spender : address, _value : uint256) -> bool:
 ```
 
 ### `increaseAllowance` 
+
+Increases the allowance granted to spender by the caller.
 
 ```js
 def increaseAllowance(_spender: address, _value: uint256) -> bool:
@@ -398,6 +405,8 @@ def increaseAllowance(_spender: address, _value: uint256) -> bool:
 ```
 
 ### `decreaseAllowance`
+
+Decreases the allowance granted to spender by the caller.
 
 ```js
 def decreaseAllowance(_spender: address, _value: uint256) -> bool:
@@ -435,19 +444,12 @@ def transfer_admin(_admin: address):
 
 ### `set_validator`
 
-Register new validator or remove a current validator.
+Register a new validator or remove a current validator.
 
 ```js
 def set_validator(_validator: address, _value: bool):
     assert msg.sender == self.admin
     self.validators[_validator] = _value
-```
-
-### `payable`
-
-```js
-def __default__():
-    pass
 ```
 
 ## Functions that Interact with Curve
@@ -536,6 +538,8 @@ def set_main_pool(_new_pool: address):
 
 ### `set_main_deposit`
 
+Used by the admin to set the main deposit. 
+
 ```js
 def set_main_deposit(_new_deposit: address):
     assert msg.sender == self.admin
@@ -543,6 +547,8 @@ def set_main_deposit(_new_deposit: address):
 ```
 
 ### `set_main_pool_coin_count`
+
+Used by the admin to set the pool coin count. 
 
 ```js
 def set_main_pool_coin_count(_new_main_pool_coin_count: uint8):
@@ -552,6 +558,8 @@ def set_main_pool_coin_count(_new_main_pool_coin_count: uint8):
 
 ### `set_is_crypto_pool`
 
+Used by the admin to set the new Curve pool. 
+
 ```js
 def set_is_crypto_pool(_new_is_crypto_pool: bool):
     assert msg.sender == self.admin
@@ -560,6 +568,8 @@ def set_is_crypto_pool(_new_is_crypto_pool: bool):
 
 ### `set_main_lp_token`
 
+Used by the admin to set the main liqudity pool token. 
+
 ```js
 def set_main_lp_token(_new_main_lp_token: address):
     assert msg.sender == self.admin
@@ -567,6 +577,8 @@ def set_main_lp_token(_new_main_lp_token: address):
 ```
 
 ### `set_zap_deposit`
+
+Used by the admin to set the ZAP deposit. 
 
 ```js
 def set_zap_deposit(_new_zap_deposit: address):
