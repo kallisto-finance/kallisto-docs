@@ -4,7 +4,6 @@
 
 Navigate to [kallisto.finance](https://kallisto.finance/).
 
-
 Connect your wallet.
 
 We are using MetaMask in this tutorial. Ensure that you have access
@@ -19,10 +18,8 @@ You will see the vault dashboard that shows the active pool,
 the amount of liqudity your account is providing and how much of
 the pool liqudity is yours.
 
-
 On the dashboard, a user is able to manage their liqudity by either
 adding or withdrawing assets.
-
 
 ## Deposits
 

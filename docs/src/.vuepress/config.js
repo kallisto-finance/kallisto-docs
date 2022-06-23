@@ -62,6 +62,16 @@ module.exports = {
             'fees',
             ['chaser-vault', 'Smart Contracts'],
             ['scripts', 'Scripts'],
+            ['vault-ui', 'Vault UI'],
+          ]
+        },
+        {
+          title: 'Logic',
+          collapsable: false,
+          children: [
+            ['chaser-vault', 'Smart Contracts'],
+            ['scripts', 'Scripts'],
+            ['vault-ui', 'Vault UI'],
           ]
         },
       ],
