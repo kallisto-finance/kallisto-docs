@@ -6,7 +6,8 @@ the same [source code repository](https://github.com/kallisto-finance/curve-apy-
 
 ## `deposit.py`
 
-The deposit script
+The 
+[deposit script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/deposit.py)
 
 ```python
 def main():
@@ -19,7 +20,8 @@ def main():
 
 ## `withdraw.py`
 
-The withdrawl script
+The 
+[withdrawl script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/withdraw.py)
 
 ```python
 def main():
@@ -32,7 +34,8 @@ def main():
 
 ## `deploy.py`
 
-The deployer script
+The 
+[deployer script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/deploy.py)
 
 ```python
 def main():
@@ -42,7 +45,8 @@ def main():
 
 ## `updatepool.py`
 
-The pool updater script
+The 
+[pool updater script](https://github.com/kallisto-finance/curve-apy-vault/blob/main/scripts/updatepool.py)
 
 ```python
 def main():
