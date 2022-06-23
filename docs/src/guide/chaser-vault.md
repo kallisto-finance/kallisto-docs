@@ -142,27 +142,27 @@ event Updated:
 
 | Key 	| Type 	| Description 	|
 |---	|---	|---	|
-| `name` 	| public(String[ 64 ]) 	|  	|
-| `symbol` 	| public(String[ 32 ]) 	|  	|
-| `balanceOf` 	| public(HashMap[address, uint256]) 	|  	|
-| `allowance` 	| public(HashMap[address, HashMap[address, uint256]]) 	|  	|
-| `totalSupply` 	| public(uint256) 	|  	|
-| `paused` 	| public(bool) 	|  	|
+| `name` 	| public(String[64]) 	| token name 	|
+| `symbol` 	| public(String[32]) 	| token symbol 	|
+| `balanceOf` 	| public(HashMap[address, uint256]) 	| amount of tokens held by owner 	|
+| `allowance` 	| public(HashMap[address, HashMap[address, uint256]]) 	| grant approval to transfer to another address 	|
+| `totalSupply` 	| public(uint256) 	| total token supply 	|
+| `paused` 	| public(bool) 	| if true, pause modifier will halt function's ability to work  	|
 | `main_pool` 	| public(address) 	| main curve pool address 	|
 | `main_pool_coin_count` 	| public(uint8) 	| coin count 	|
 | `is_crypto_pool` 	| public(bool) 	| true if main pool coin index type is uint256 	|
 | `main_deposit` 	| public(address) 	| main deposit address for meta pools; (0) for base pools, (1) for lending pools 	|
-| `main_lp_token` 	| public(address) 	| the main token in the LPCurve LP address of main pool 	|
-| `validators` 	| public ( HashMap [ address ,  bool ]) 	| validators who can update pool 	|
-| `admin` 	| public ( address ) 	| vault admin 	|
-| `zap_deposit` 	| public ( address ) 	| ZAP deposit pool address that curve provides 	|
+| `main_lp_token` 	| public(address) 	| the main token in the Curve LP address of main pool 	|
+| `validators` 	| public (HashMap[address, bool]) 	| validators who can update pool 	|
+| `admin` 	| public(address) 	| vault admin 	|
+| `zap_deposit` 	| public(address) 	| ZAP deposit pool address that curve provides 	|
 | `MAX_COINS` 	| constant(uint8) 	| max coin count 	|
 | `VETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE` 	| constant(address) 	| virtual ETH address 	|
 | `WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` 	| constant(address) 	| wrapped ETH address 	|
 | `IS_A_POOL_IN_DEPOSIT = 0x0000000000000000000000000000000000000001` 	| constant(address) 	| use address(1) as deposit address for aave pools 	|
 | `INIT_ZAP_DEPOSIT = 0xA79828DF1850E8a3A3064576f380D90aECDD3359` 	| constant(address) 	| initiate ZAP deposit contract address 	|
-| `TRUE_BYTES32 = 0x0000000000000000000000000000000000000000000000000000000000000001` 	| constant ( bytes32 ) 	| conversion True into bytes32 	|
-| `MAX_SWAP = 4` 	| constant ( uint256 ) 	| max count of swap steps 	|
+| `TRUE_BYTES32 = 0x0000000000000000000000000000000000000000000000000000000000000001` 	| constant(bytes32) 	| conversion True into bytes32 	|
+| `MAX_SWAP = 4` 	| constant(uint256) 	| max count of swap steps 	|
 
 :::
 
