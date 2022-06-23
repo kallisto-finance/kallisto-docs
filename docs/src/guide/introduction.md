@@ -1,7 +1,7 @@
 # Kallisto
 ### A Decentralized and Automated Yield Chaser
 
-Kallisto v1 was previously built on Terra, which is no longer functioning. Kallisto is heading
+Kallisto v0 was previously built on Terra, which is no longer functioning. Kallisto is heading
 to Ethereum to target the largest AMMs with a current focus in offering a Curve Finance APY chaser
 vault. This new vault will aim to provide a low-cost, data science-based strategy for liquidity
 providers to participate in Curve pools. By aggregating users’ deposits and monitoring price dynamics,
@@ -12,7 +12,7 @@ and deploys dynamic liquidity provider strategies for Curve pools. Kallisto moni
 statistics on Curve's DEX and searches for the best liquidity provider opportunities.
 
 To avoid illiquidity risk and small cap coins’ high volatility, the vault only chases APY among a
-number of large, liquid and balanced pools. The vault screens for large, balanced pools as candidates 
+number of large, liquid and balanced pools. The vault screens for large, balanced pools as candidates
 and selects the pool with the highest APY with both base and CRV returns aggregated. By consistently
 moving liquidity into the optimal pool, the vault is designed to achieve the best return across all
 Curve pools while keeping liquidity risk low.
