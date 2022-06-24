@@ -9,6 +9,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![made-with-Markdown](https://img.shields.io/badge/Made%20with-Markdown-1f425f.svg)](https://www.markdownguide.org/)
+[![Build](https://github.com/kallisto-finance/kallisto-docs/actions/workflows/vuepress-deploy.yml/badge.svg)](https://github.com/kallisto-finance/kallisto-docs/actions/workflows/vuepress-deploy.yml)
 </div>
 
 <!-- TOC -->
