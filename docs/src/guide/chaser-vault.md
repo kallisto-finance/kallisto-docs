@@ -33,6 +33,16 @@ struct SwapRoute:
 
 :::
 
+The vault locks the balance using the following data type:
+
+```js
+struct LockedBalance:
+    amount: int128
+    end: uint256
+```
+
+> where `amount` is the token amount locked & `end` is the end of the lock period.
+
 ## Contract Events
 
 ### ERC20 events
@@ -163,7 +173,7 @@ and follows the interfaces required to interact with Curve.
 
 | Key 	| Type 	| Description 	|
 |---	|---	|---	|
-| `MAX_COINS` 	| constant(uint8) 	| max coin count 	|
+| `MAX_COINS = 8` 	| constant(uint8) 	| max coins in the Curve pool 	|
 | `VETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE` 	| constant(address) 	| virtual ETH address 	|
 | `WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` 	| constant(address) 	| wrapped ETH address 	|
 | `IS_A_POOL_IN_DEPOSIT = 0x0000000000000000000000000000000000000001` 	| constant(address) 	| use address(1) as deposit address for aave pools 	|
@@ -219,11 +229,19 @@ interface CryptoZapDeposit:
     def remove_liquidity_one_coin(_pool: address, token_amount: uint256, i: uint256, min_amount: uint256): nonpayable
 ```
 
-### `CrvDeposit`
+### `LiquidityGauge`
 
 ```js
-interface CrvDeposit:
-    def pool() -> address: view
+interface LiquidityGauge:
+    def deposit(amount: uint256): nonpayable
+    def withdraw(amount: uint256): nonpayable
+```
+
+### `CrvMinter`
+
+```js
+interface CrvMinter:
+    def mint(gauge_addr: address): nonpayable
 ```
 
 ### `ERC20`
@@ -241,14 +259,27 @@ interface WrappedEth:
     def withdraw(amount: uint256): nonpayable
 ```
 
+### `VeCRV`
+
+```js
+interface VeCRV:
+    def increase_unlock_time(_unlock_time: uint256): nonpayable
+    def increase_amount(_value: uint256): nonpayable
+    def create_lock(_value: uint256, _unlock_time: uint256): nonpayable
+    def locked(addr: address) -> LockedBalance: view
+    def withdraw(): nonpayable
+
+```
+
 # Vault Initiation
 
 The 
 [external initiation function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L106) is called to set up the vault by specifying the **name**, 
-**token symbol**, **vault admin**, **validators**, **main Curve pool**, and **main deposit**. 
+**token**, **main curve pool**, **main deposit address**, **main pool coin count**, 
+and the **curve LP token address of the main pool**,  
 
 ```js
-def __init__(_name: String[64], _symbol: String[32], _main_pool: address, _main_deposit: address, _main_pool_coin_count: uint8, _main_lp_token: address, _is_crypto_pool: bool):
+def __init__(_name: String[64], _symbol: String[32], _main_pool: address, _main_deposit: address, _main_pool_coin_count: uint8, _main_lp_token: address, _main_liquidity_gauge: address, _is_crypto_pool: bool):
 ```
 
 # ERC20 Common Functions
@@ -419,15 +450,17 @@ def decreaseAllowance(_spender: address, _value: uint256) -> bool:
     return True
 ```
 
-### `make_fee`
+### `collect_management_fee`
 
-Charge fees in the form of transferring tokens into the admin account.
+Collects management fee for using Chaser vault.
 
 ```js
-@external
-def make_fee(amount: uint256):
-    assert msg.sender == self.admin
-    self._mint(msg.sender, amount)
+def collect_management_fee():
+    fee_amount: uint256 = (block.timestamp - convert(self.last_management_fee_epoch, uint256)) * convert(self.management_fee, uint256) * self.totalSupply / ONE_YEAR / DENOMINATOR
+    if fee_amount > 0:
+        self._mint(self.admin, fee_amount)
+        self.last_management_fee_epoch = convert(block.timestamp, uint40)
+
 ```
 
 ### `transfer_admin`
@@ -461,19 +494,28 @@ def set_validator(_validator: address, _value: bool):
 #### `@internal`
 
 The 
-[internal deposit function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L413) interacts with Curve's smart contracts and 
-adds liquidity for one token into a Curve liquidity pool.
+[internal deposit function](https://github.com/kallisto-finance/curve-apy-vault/blob/7b4d9a4677b434282b19a39cdf7cba2272ec4b14/contracts/curve_apy_vault.vy#L273) interacts with 
+Curve's smart contracts and adds liquidity for one token into a Curve liquidity pool.
 
 ```js
-def _deposit(main_pool_: address, _main_deposit: address, _main_pool_coin_count: uint8, i: int128, in_token: address, in_amount: uint256): 
+def _deposit(main_pool_: address, _main_deposit: address, _main_pool_coin_count: uint8, i: int128, in_token: address, in_amount: uint256):
+```
+
+The 
+[internal vote-escrowed deposit function](https://github.com/kallisto-finance/curve-apy-vault/blob/7b4d9a4677b434282b19a39cdf7cba2272ec4b14/contracts/curve_apy_vault.vy#L273) interacts with 
+Curve's smart contracts to add a locked balance as stake into a Curve liquidity pool.
+
+```js
+def ve_deposit(liquidity_gauge: address, _crv_balance: uint256):
 ```
 
 #### `@external`
 
 The 
-[external deposit function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L413) works as a wrapper of the internal deposit and swap functions. 
-It is called when users deposit their tokens into the vault. Upon being called, it swaps 
-some of the deposit tokens for the tokens required by the pool, and adds liquidity.  
+[external deposit function](https://github.com/kallisto-finance/curve-apy-vault/blob/7b4d9a4677b434282b19a39cdf7cba2272ec4b14/contracts/curve_apy_vault.vy#L477) works as a 
+wrapper of the internal deposit and swap functions. It is called when users deposit their 
+tokens into the vault. Upon being called, it swaps some of the deposit tokens for the tokens 
+required by the pool, and adds liquidity.  
 
 ```js
 def deposit(token_address: address, amount: uint256, i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], min_amount: uint256) -> uint256:
@@ -482,12 +524,12 @@ def deposit(token_address: address, amount: uint256, i: int128, swap_route: DynA
 ### `swap`
 
 The 
-[internal swap function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L359) interacts with Curve's smart contract and uses a Curve liquidity pool to 
-swap one token for another. Upon being called, the function swaps the specified 
-amount of the from_token for the to_token. The inputs include the Curve liquidity 
-pool's address, the indices for the from_token and to_token, the addresses for the 
-two tokens, the amount to swap for the from_token, and whether the pool is a crypto 
-pool.
+[internal swap function](https://github.com/kallisto-finance/curve-apy-vault/blob/7b4d9a4677b434282b19a39cdf7cba2272ec4b14/contracts/curve_apy_vault.vy#L396) interacts with Curve's smart contract and 
+uses a Curve liquidity pool to swap one token for another. Upon being called, 
+the function swaps the specified amount of the from_token for the to_token. The 
+inputs include the Curve liquidity pool's address, the indices for the from_token 
+and to_token, the addresses for the two tokens, the amount to swap for the from_token, 
+and whether the pool is a crypto pool.
 
 ```js
 def _swap(pool: address, i: int128, j: int128, from_token: address, to_token: address, is_underlying: bool, from_amount: uint256, is_crypto_pool: bool) -> uint256:
@@ -498,7 +540,7 @@ def _swap(pool: address, i: int128, j: int128, from_token: address, to_token: ad
 #### `@internal`
 
 The 
-[internal withdraw function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L447) interacts with the Curve smart contracts directly. It approves 
+[internal withdraw function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L448) interacts with the Curve smart contracts directly. It approves 
 the transaction and removes liquidity in one token. The function requires inputs 
 specifying the LP tokens and the main pool address to remove liquidity and returned 
 token address, index, and the amount.
@@ -510,10 +552,11 @@ def _withdraw(lp_token: address, _main_pool: address, out_token: address, i: int
 #### `@external`
 
 The 
-[external withdraw function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L500) is a wrapper of the internal withdraw function. 
-It is called when users withdraw liquidity from the vault. The inputs include withdrawal 
-token address and amount, swap route, and the minimal amount for swapping. Since the users' 
-withdrawal token may differ from the pool's tokens, a swap will be applied in that case.
+[external withdraw function](https://github.com/kallisto-finance/curve-apy-vault/blob/7b4d9a4677b434282b19a39cdf7cba2272ec4b14/contracts/curve_apy_vault.vy#L577) is a wrapper 
+of the internal withdraw function. It is called when users withdraw liquidity from the vault. 
+The inputs include withdrawal token address and amount, swap route, and the minimal amount 
+for swapping. Since the users' withdrawal token may differ from the pool's tokens, a swap 
+will be applied in that case.
 
 ```js
 def withdraw(token_address: address, amount: uint256, i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], min_amount: uint256) -> uint256:
@@ -521,13 +564,25 @@ def withdraw(token_address: address, amount: uint256, i: int128, swap_route: Dyn
 
 ### `update_pool`
 
-The [internal update pool function](https://github.com/kallisto-finance/curve-apy-vault/blob/main/contracts/curve_apy_vault.vy#L533) moves the vault's liquidity from one pool to another one. 
-It first removes liquidity from the old pool and receives one token. Then, it 
-swaps this token for the new token and adds liquidity to the new pool. 
-This is followed by updating the new LP amount. 
+The 
+[internal update pool function](https://github.com/kallisto-finance/curve-apy-vault/blob/7b4d9a4677b434282b19a39cdf7cba2272ec4b14/contracts/curve_apy_vault.vy#L616) 
+moves the vault's liquidity from one pool to another one. It first removes liquidity 
+from the old pool and receives one token. Then, it swaps this token for the new token 
+and adds liquidity to the new pool. This is followed by updating the new LP amount. 
 
 ```js
 def update_pool(_out_token: address, old_i: int128, swap_route: DynArray[SwapRoute, MAX_SWAP], new_pool: address, new_deposit: address, new_i: int128, new_pool_coin_count: uint8, new_lp_token: address, new_is_crypto_pool: bool, new_lp_min_amount: uint256):
+```
+
+### `collect_crv_reward`
+
+The 
+[external CRV reward collector function](https://github.com/kallisto-finance/curve-apy-vault/blob/7b4d9a4677b434282b19a39cdf7cba2272ec4b14/contracts/curve_apy_vault.vy#L679) collects the CRV 
+rewards accumulated through the Chaser vault's Curve pool. Each pool has a unique liquidity gauge.
+The function checks the 
+
+```js
+def collect_crv_reward(swap_route: DynArray[SwapRoute, MAX_SWAP], i: int128, min_amount: uint256) -> uint256:
 ```
 
 ## Emergency Functions
@@ -582,6 +637,23 @@ Used by the admin to set the main liquidity pool token.
 def set_main_lp_token(_new_main_lp_token: address):
     assert msg.sender == self.admin
     self.main_lp_token = _new_main_lp_token
+```
+
+### `set_main_liquidity_gauge`
+
+Used by admin to se the main liquidity gauge.
+> `LiquidityGauge` measures liquidity provided by users over time, 
+> in order to distribute CRV and other rewards from staking.
+
+```js
+def set_main_liquidity_gauge(_new_main_liquidity_gauge: address):
+    assert msg.sender == self.admin and self.main_liquidity_gauge == ZERO_ADDRESS
+    lp_token: address = self.main_lp_token
+    amount: uint256 = ERC20(lp_token).balanceOf(self)
+    self.safe_approve(lp_token, _new_main_liquidity_gauge, amount)
+    LiquidityGauge(_new_main_liquidity_gauge).deposit(amount)
+    self.liquidity = amount
+    self.main_liquidity_gauge = _new_main_liquidity_gauge
 ```
 
 ### `set_zap_deposit`
