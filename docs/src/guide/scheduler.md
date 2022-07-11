@@ -28,7 +28,7 @@ job scheduling. The documentation for Paloma will be released soon.
 
 ### Target pool
 
-Yield chasing is achieved by finding the target pool with the **highest base APY** from a selection
+Yield chasing is achieved by finding the target pool with the **highest APY** from a selection
 of candidate pools. These candidate pools are a selection of Curve pools.
 
 :::details Curve Pools vs. Crypto Pools
@@ -41,7 +41,7 @@ They use liquidity more effectively by concentrating it at current prices.
 
 The following conditions choose the candidate pools:
 
-- **Base APY**
+- **APY**
 - **TVL** > `tvl_threshold`
 - **Daily volume** > `daily_volume_threshold`
 - **Token imbalance** < `token_imbalance_threshold`
