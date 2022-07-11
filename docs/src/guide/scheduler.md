@@ -28,7 +28,7 @@ job scheduling. The documentation for Paloma will be released soon.
 
 ### Target pool
 
-Yield chasing is achieved by finding the target pool with the **highest base APY** from a selection
+Yield chasing is achieved by finding the target pool with the **highest APY** from a selection
 of candidate pools. These candidate pools are a selection of Curve pools.
 
 :::details Curve Pools vs. Crypto Pools
@@ -41,7 +41,7 @@ They use liquidity more effectively by concentrating it at current prices.
 
 The following conditions choose the candidate pools:
 
-- **Base APY**
+- **APY**
 - **TVL** > `tvl_threshold`
 - **Daily volume** > `daily_volume_threshold`
 - **Token imbalance** < `token_imbalance_threshold`
@@ -52,20 +52,19 @@ some pools that may be highly volatile, offer a high risk of impermanent loss, e
 
 ### Check for Pool Update
 
-- Kallisto strategy checks the time between now and when the current Curve pool was 
-  entered (`lock_period`) AND checks the current vault total cap.
-- Total cap calculation is the balance from Curve LP from vault `main_lp_token` multiplied by 
+- Kallisto strategy checks the time between now and when the current Curve pool was entered AND checks the current vault total cap.
+- Total cap calculation is the balance from Curve LP from vault `main_lp_token` multiplied by
 [Curve LP price information](https://thegraph.com/explorer/subgraph?id=4yx4rR6Kf8WH4RJPGhLSHojUxJzRWgEZb51iTran1sEG&view=Overview):
 $$ main_lp_token \times LP price$$
 
-Rebalance lock-up (`lock_up`) is the time the vault waits from one pool update to the 
-next one. It is determined by the vault volume. When the vault volume is small, the 
-rebalance lock-up time is large to reduce the cost of frequent trading. Once the volume 
-is large enough, the lock-up time becomes shorter to take advantage of the most up-to-date 
+Rebalance lock-up (`lock_period`) is the time the vault waits from one pool update to the
+next one. It is determined by the vault volume. When the vault volume is small, the
+rebalance lock-up time is large to reduce the cost of frequent trading. Once the volume
+is large enough, the lock-up time becomes shorter to take advantage of the most up-to-date
 market info. Currently, this parameter is in three different tiers:
-* **total cap below $100k and `lock_period` ≥ 3 months** OR
-* **total cap ≥ $100k and < $1MN  and `lock_period` ≥ 1 month** OR
-* **total cap ≥ $1MN and `lock_period`  ≥ 1 week**
+* **total cap below $100k: `lock_period` = 1 month** OR
+* **total cap ≥ $100k and < $1MN: `lock_period` = 1 week** OR
+* **total cap ≥ $1MN: `lock_period`  = 1 day**
 
   The script will pass `swap_route` and `new_pool` (the pool address output from the script) 
 as parameters to `update_pool`.
